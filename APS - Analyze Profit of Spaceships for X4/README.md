@@ -1,4 +1,4 @@
-# Google-Timeline-Analyser
+# X4 Analyse Profit of Spaceships !
 HUUUUGE CREDIT TO magictrip https://github.com/magictripgames/X4MagicTripLogAnalyzer
 
 ## Installation Requirements:
@@ -17,6 +17,8 @@ HUUUUGE CREDIT TO magictrip https://github.com/magictripgames/X4MagicTripLogAnal
  - data separated by user
  - log management
  - report page showing a graph for activities
+ - MVC framework
+ - entity framework database migration
 
 ## Usage:
  - start it and upload a file
@@ -27,5 +29,5 @@ HUUUUGE CREDIT TO magictrip https://github.com/magictripgames/X4MagicTripLogAnal
 ## TODO features:
  - easy installation package for windows and linux
  - add more statistics
--use db instead of json files for data and wares.json
--remember last used path
+ - use db instead of json files for data and wares.json
+ - remember last used path
