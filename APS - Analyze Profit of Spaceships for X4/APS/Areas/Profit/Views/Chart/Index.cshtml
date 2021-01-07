@@ -1,0 +1,94 @@
+﻿@using APS.Methods.Profit
+@using Kendo.Mvc.UI
+@using APS.Resources
+@{
+    Layout = "_Layout";
+    ViewBag.Title = Label.Rapport;
+}
+@section Scripts {
+    <script language="jscript">
+        $(document).ready(function () {
+            $("#tabstrip").kendoTabStrip({
+                animation: { open: { effects: "fadeIn" } }
+            });
+
+            //tests
+            //var chart = $("#Ware").data("kendoChart");
+            //chart.dataSource.filter({ field: "Year", operator: "gte", value: 2020 });
+            //chart.refresh();
+        });
+    </script>
+    <script src="~/js/CommonScripts.js"></script>
+}        
+@section Styles
+{
+    <style>
+        #tabstrip {
+            height: 470px;
+        }
+        .k-content {
+            border-color: rgba(0,0,0,.08);
+            color: #656565;
+            background-color: #fff;
+        }
+        .k-content {
+            outline: 0;
+        }
+    </style>
+}
+
+<div class="content grid-wrapper">
+    <h2>@ViewBag.Title</h2>
+    <div id="tabstrip">
+        <ul>
+            <li class="k-state-active">
+                Ware
+            </li>
+            <li>
+                Ships
+            </li>
+        </ul>
+
+        <div class="grid-wrapper">
+
+            @(Html.Kendo().Chart<ChartWareVM>()
+                .Name("chartWare")
+                .Title("Ware")
+                .DataSource(dataSource => dataSource
+                    .Read(read => read.Action("ReadTradeOperation", "Chart"))
+                    .Sort(sort =>
+                    {
+                        sort.Add(model => model.TimeRounded);
+                    })
+                )
+                .SeriesDefaults(s=> s.Line()
+                    .Style(ChartLineStyle.Smooth)
+                    //.CategoryField("Ware")
+                    .MissingValues(ChartAreaMissingValues.Zero)
+                    //.Stack(true)
+                )
+                .Series(series => {
+                    series.Line(model => model.Money).Name("Money");
+                    series.Line(model => model.EstimatedProfit).Name("EstimatedProfit");
+                    series.Line(model => model.Quantity).Name("Quantity");
+                })
+                .Legend(legend => legend
+                    .Position(ChartLegendPosition.Bottom)
+                )
+                .CategoryAxis(axis => axis
+                    //.Type(ChartCategoryAxisType.Category)
+                    //.BaseUnit(ChartAxisBaseUnit.Fit)
+                    .Field("TimeRounded")
+                    //.Labels(labels => labels.Format("yyyy-MM"))
+                    .Line(line => line.Visible(false))
+                    .MajorGridLines(lines => lines.Visible(false))
+                ))
+            hoping to have a chart with all wares here showing their performance
+            with a ship filter and hour from to filter as well
+        </div>
+        <div class="grid-wrapper">
+            hoping to have a chart with all ships here showing their performance
+            with a ware filter and hour from to filter as well
+        </div>
+    </div>
+</div>

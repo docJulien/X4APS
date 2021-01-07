@@ -1,0 +1,65 @@
+﻿@using APS.Helpers;
+@using APS.Resources;
+@using APS.Methods.Gestion;
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+            <li>
+                <a asp-controller="Home" asp-action="Index" asp-area=""><img id="navbarlogo" src='@Url.Content("~/images/logo.png")' /></a>
+            </li>
+            @if (User.IsInRole(ConstanteRole.Administrateur))
+            {
+                <li class="customLi dropdown @Html.IsSelected(controller: "Utilisateurs") @Html.IsSelected(controller: "Log", action: "Index" ) ">
+                    <a class="customDropTog dropdown-toggle" data-toggle="dropdown" href="#">@Label.MenuGestion<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li class="@Html.IsSelected(controller: "Utilisateurs", action: "Index" )"><a asp-controller="Utilisateurs" asp-action="Index" asp-area="Gestion">@Label.TitreGestionUtilisateurs</a></li>
+                        <li class="@Html.IsSelected(controller: "Log", action: "Index" )"><a asp-controller="Log" asp-action="Index" asp-area="Gestion">@Label.Log</a></li>
+                    </ul>
+                </li>
+            }
+            @if (User.IsInRole(ConstanteRole.Externe) || User.IsInRole(ConstanteRole.Administrateur))
+            {
+                <li class="customLi dropdown @Html.IsSelected(controller: "Upload") @Html.IsSelected(controller: "Chart")">
+                    <a class="customDropTog dropdown-toggle" data-toggle="dropdown" href="#">@Label.MenuProfit<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li class="@Html.IsSelected(controller: "Upload", action: "Index" )"><a asp-controller="Upload" asp-action="Index" asp-area="Profit">@Label.Upload</a></li>
+                        <li class="@Html.IsSelected(controller: "Chart", action: "Index" )"><a asp-controller="Chart" asp-action="Index" asp-area="Profit">@Label.Rapport</a></li>
+                    </ul>
+                </li>
+            }
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right">
+            <li class="customLi">
+                <a class="customDropTog dropdown-toggle" data-toggle="dropdown" href="#">@UserManager.GetUserAsync(User).Result.UserName<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a asp-controller="Account" asp-action="Logout">@Label.Deconnexion</a></li>
+                    @if (User.IsInRole(ConstanteRole.Administrateur) || User.IsInRole(ConstanteRole.Externe))
+                    {
+                        @foreach (string s in Utilisateurs.GetFastSwitchUsers())
+                        {
+                            <li><a asp-controller="Account" asp-action="LoginAs" asp-route-id="@s">@s</a></li>
+                        }
+                    }
+                </ul>
+            </li>
+        </ul>
+    </div>
+}
+else
+{
+    <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+            <li>
+                <a asp-controller="Account" asp-action="Login" asp-area=""><img id="navbarlogo" src='@Url.Content("~/images/logo.png")' /></a>
+            </li>
+        </ul>
+    </div>
+}
+

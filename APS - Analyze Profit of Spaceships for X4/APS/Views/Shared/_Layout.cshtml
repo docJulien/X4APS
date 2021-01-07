@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>@ViewBag.Title</title>
+    
+    @Html.Partial("Styles")
+    @Html.Partial("Scripts")
+
+
+    <!-- Add local styles, mostly for plugins css file -->
+    @if (IsSectionDefined("Styles"))
+    {@RenderSection("Styles", required: false)}
+
+    <script>
+        kendo.culture("en-CA");
+    </script>
+
+</head>
+
+<body class="landing-page fixed-navbar sidebar-scroll fixed-small-header">
+
+    <!--[if lt IE 7]>
+        <p class="alert alert-danger">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+        <nav role="navigation">
+            <div class="" id="header">
+                @Html.Partial("_Navigation")
+            </div>
+        </nav>
+
+            <div class="content">
+                @RenderBody()
+            </div>
+
+        <!-- Handler for local scripts -->
+        @RenderSection("scripts", required: false)
+
+</body>
+
+</html>

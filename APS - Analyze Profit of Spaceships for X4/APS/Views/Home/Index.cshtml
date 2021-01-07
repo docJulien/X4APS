@@ -1,0 +1,101 @@
+﻿@using Kendo.Mvc.UI
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+
+@if (SignInManager.IsSignedIn(User))
+{
+}
+<div id="" style="margin:auto; width:70%">
+    @(Html.Kendo().ScrollView()
+        .Name("scrollView")
+        .ContentHeight("100%")
+        .Items(x =>
+        {
+            x.Add().Content("<div class='photo photo1'></div>");
+            x.Add().Content("<div class='photo photo2'></div>");
+        })
+        .EnablePager(false)
+        .Duration(500)
+        .VelocityThreshold(200)
+        .HtmlAttributes(new { style = "height:460px; width:800px; max-width: 100%;" })
+        .Events(x => x.Change("onChange").Refresh("onRefresh"))
+        )
+</div>
+@*<div id="welcomeScroll" style="margin:auto; width:70%">
+    <div id="scrollView2" style="width: 660px; height: 420px; max-width: 100%; margin: auto;">
+        <div class="photo photo1" data-role="page">
+        </div><div class="photo photo2" data-role="page">
+        </div><div class="photo photo3" data-role="page">
+        </div><div class="photo photo4" data-role="page">
+        </div><div class="photo photo5" data-role="page">
+        </div><div class="photo photo6" data-role="page">
+        </div><div class="photo photo7" data-role="page">
+        </div><div class="photo photo8" data-role="page">
+        </div><div class="photo photo9" data-role="page">
+        </div><div class="photo photo10" data-role="page">
+        </div>
+    </div>
+    <div class="box">
+        <h4>Console log</h4>
+        <div class="console"></div>
+    </div>
+    <script>
+        $(document).ready(function () {
+
+
+            function onChange(e) {
+                Console.log("page " + e.nextPage);
+            }
+
+            function onRefresh(e) {
+                Console.log("Total: " + e.pageCount + " Current: " + e.page);
+            }
+
+            $("#scrollView2").kendoScrollView({
+                enablePager: true,
+                contentHeight: "100%",
+                change: onChange,
+                refresh: onRefresh
+            });
+        });
+    </script>
+</div>*@
+
+@section scripts
+{
+    <script>
+        function onChange(e) {
+            console.log("page " + e.nextPage);
+        }
+
+        function onRefresh(e) {
+            console.log("Total: " + e.pageCount + " Current: " + e.page);
+        }
+    </script>
+}
+
+
+@section Styles
+{
+    <style>
+
+        .photo {
+            display: inline-block;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center center;
+            width: inherit;
+            height: inherit;
+        }
+
+        .photo1 {
+            background-image: url("images/photo1.jpg");
+        }
+
+        .photo2 {
+            background-image: url("images/photo2.jpg");
+        }
+    </style>
+}

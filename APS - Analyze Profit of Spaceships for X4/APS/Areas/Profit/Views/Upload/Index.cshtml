@@ -1,0 +1,176 @@
+﻿@using APS.Areas.Profit.Models
+@using APS.Helpers
+@using Kendo.Mvc.UI
+@using APS.Resources
+@model UploadModel
+@{
+    Layout = "_Layout";
+    ViewBag.Title = Label.Upload;
+}
+@section Scripts {
+    <script src="~/js/Profit/Upload.js"></script>
+    <script src="~/js/CommonScripts.js"></script>
+}        
+@section Styles
+{
+    <style>
+        #tabstrip {
+            height: 470px;
+        }
+        .note-section.k-content {
+            box-shadow: 0 1px 2px 1px rgba(0,0,0,.08), 0 3px 6px rgba(0,0,0,.08);
+        }
+        .note-section {
+            text-align: center;
+            line-height: 4em;
+        }
+        .note-section {
+            margin: 0 auto 4.5em;
+            padding: 3em;
+            border: 1px solid rgba(20,53,80,0.14);
+        }
+        .k-content {
+            border-color: rgba(0,0,0,.08);
+            color: #656565;
+            background-color: #fff;
+        }
+        .k-content {
+            outline: 0;
+        }
+    </style>
+}
+
+<div class="content grid-wrapper">
+    <h2>@ViewBag.Title</h2>
+    <div id="urlClearData" data-url='@Url.Action("ClearData", "Upload", new { area= "Profit"})'></div>
+
+    <div id="tabstrip">
+        <ul>
+            <li class="k-state-active">
+                Upload
+            </li>
+            <li>
+                Configuration Dynamic grid
+            </li>
+            <li>
+                Dynamic Grid
+            </li>
+            <li>
+                Raw data
+            </li>
+        </ul>
+
+        <div class="k-content">
+            <div class="note-section k-content">
+                <h3>Note</h3>
+                <br />
+            </div>
+            todo browse for file caution this takes a shitload of time:
+            <input id="fileServerSide" type="text" value="@(@"D:\FastDocuments\Egosoft\X4\69563255\save\quicksave.xml")"/>
+            <input type="hidden" id="urlRefreshData" value="@Url.Action("Save","Upload")"/>
+            <button id="refreshData">Refresh specified file</button>
+
+            @*//actually upload the file would be this:*@
+            @*@(Html.Kendo().Upload()
+                .Name("files")
+                .Async(a => a
+                    .Save("Save", "Upload")
+                    .AutoUpload(true)
+                )
+                .Validation(validation =>
+                {
+                    validation.AllowedExtensions(Model.AllowedExtensions);
+                })
+                .Events(events =>
+                {
+                    events.Error("errorHandler");
+                    events.Complete("Upload.OnComplete");
+                })
+            )*@
+        </div>
+        <div>
+            @(Html.Kendo().PivotConfigurator()
+                .Name("configurator")
+                .Filterable(true)
+                .Sortable()
+            )
+        </div>
+        <div class="grid-wrapper">
+            @(Html.Kendo().PivotGrid<TradeOperationVM>()
+                .Name("pivotgrid")
+                .Configurator("#configurator")
+                .ColumnWidth(120)
+                .Filterable(true)
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Transport(transport => transport.Read("Read", "Upload"))
+                    .Schema(schema => schema
+                        .Cube(cube => cube
+                            .Dimensions(dimensions =>
+                            {
+                                dimensions.Add(model => model.TimeRounded).Caption("All Time");
+                                dimensions.Add(model => model.ItemSoldId).Caption("All Wares");
+                                dimensions.Add(model => model.Faction).Caption("All Factions");
+                                //todo not working? dimensions.Add(model => model.OurShip.ShipID).Caption("All Ships");
+                            })
+                            .Measures(measures =>
+                            {
+                                measures.Add("EstimatedProfit").Field(model => model.EstimatedProfit).AggregateName("sum").Format("{0:n2}");
+                                measures.Add("Money").Field(model => model.Money).AggregateName("sum").Format("{0:n2}");
+                                measures.Add("PricePerItem").Field(model => model.PricePerItem).AggregateName("sum").Format("{0:n2}");
+                                measures.Add("Quantity").Field(model => model.Quantity).AggregateName("sum").Format("{0:n2}");
+                            })))
+                    .Columns(columns =>
+                    {
+                        columns.Add("TimeRounded").Expand(true);
+                    })
+                    .Rows(rows => rows.Add("ItemSoldId").Expand(true))
+                    .Measures(measures => measures.Values("EstimatedProfit"))
+                )
+                )
+        </div>
+        <div class="grid-wrapper">
+            @(Html.Kendo().Grid<TradeOperationVM>()
+                .Name("Grid")
+                .Events(e => { e.ExcelExport("resetGridAfterExport"); })
+                .Columns(columns =>
+                {
+                    columns.Bound(c => c.Time);
+                    columns.Bound(c => c.TimeRounded).Title("Hour");
+                    columns.Bound(c => c.ItemSoldId).Title("Ware");
+                    columns.Bound(c => c.OurShipID).Title("Ship ID");
+                    columns.Bound(c => c.OurShipName).Title("Ship");
+                    columns.Bound(c => c.SoldToId).Title("Sold To Id");
+                    columns.Bound(c => c.SoldToName).Title("Sold To");
+                    columns.Bound(c => c.Faction);
+                    columns.Bound(c => c.InventorySpaceUsed);
+                    columns.Bound(c => c.Quantity);
+                    columns.Bound(c => c.Money).Format("{0:n2}").Width(181);
+                    columns.Bound(c => c.EstimatedProfit).Format("{0:n2}").Width(181);
+                })
+                .StandardGridConfiguration()
+                .ToolBar(t =>
+                {
+                    t.Custom().Text("Erase all data").HtmlAttributes(new { href = "#", onclick = "Upload.ClearData()" });
+                    t.Custom().Text("Export Excel").HtmlAttributes(new { href = "#", onclick = "exportToExcel()" });
+                }).Excel(excel => excel.AllPages(true).Filterable(true))
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .ServerOperation(true)
+                    .Events(events =>
+                    {
+                        events.Error("errorHandler");
+                        events.RequestEnd("saveHandler");
+                    })
+                    .Model(model =>
+                    {
+                        model.Id(p => p.Time);
+                    })
+                    .Read(read => read.Action("Read", "Upload", new { Area = "Profit" }))
+                    .PageSize(17)
+                    .Sort(s => s.Add(x => x.Time).Ascending())
+                )
+                )
+        </div>
+    </div>
+</div>

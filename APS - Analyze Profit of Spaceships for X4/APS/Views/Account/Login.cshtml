@@ -1,0 +1,46 @@
+﻿@using APS.Resources
+@model LoginViewModel
+@inject SignInManager<ApplicationUser> SignInManager
+
+@{
+    ViewData["Title"] = Label.Connexion;
+}
+<div class="top-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6 col-sm-offset-3 form-box">
+                <form asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
+                    <div class="form-top">
+                        <div class="form-top-left">
+                            @Label.TitreLogin
+                        </div>
+                    </div>
+                    <div class="form-bottom">
+                        <div asp-validation-summary="All" class="text-danger"></div>
+                        <div class="form-group">
+                            <input asp-for="Username" class="form-control" placeholder="@Label.Username..." />
+                        </div>
+                        <div class="form-group">
+                            <input asp-for="Password" class="form-control" placeholder="@Label.MotPasse..." />
+                        </div>
+                        <div class="btn-login">
+                            <button type="submit" class="btn btn-custom"><i class="fa fa-unlock"></i> @Label.Connecter</button>
+                        </div>
+
+
+                        <div class="form-group">
+                            <p>
+                                <a asp-action="ForgotPassword">@Label.OublieMotPasse</a>
+                            </p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

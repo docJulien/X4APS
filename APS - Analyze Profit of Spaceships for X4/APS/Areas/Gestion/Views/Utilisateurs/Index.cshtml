@@ -1,0 +1,72 @@
+﻿@using APS.Areas.Gestion.Models
+@using APS.Helpers
+@using Kendo.Mvc.UI
+@using APS.Resources
+
+@{
+    Layout = "_Layout";
+    ViewBag.Title = Label.TitreGestionUtilisateurs;
+}
+
+@section Scripts {
+    <script src="~/js/Gestion/Utilisateurs.js"></script>
+    <script src="~/js/CommonScripts.js"></script>
+    <script src="~/js/DoubleClickEdit.js"></script>
+}
+<div class="grid-wrapper">
+    <h2>@ViewBag.Title</h2>
+
+    @(Html.Kendo().Grid<InformationUtilisateurViewModel>
+        ()
+        .Name("Grid")
+        .Events(e => { e.ExcelExport("resetGridAfterExport"); e.Edit("userGridEdit"); })
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.UserName).Filterable(x => x.Cell(y => y.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains).Delay(100)));
+            columns.Bound(c => c.Id).Filterable(x => x.Cell(y => y.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains).Delay(100))).Hidden();
+            columns.Bound(c => c.NomComplet).ClientTemplate("#: FirstName # #: LastName #").Filterable(x => x.Cell(y => y.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains).Delay(100)));
+            columns.Bound(c => c.Email).Filterable(x => x.Enabled(false));
+            columns.Bound(c => c.Groupes).ClientTemplate("#= getNomsGroupes(data.Groupes) #").Filterable(x => x.Enabled(false)).Sortable(false);
+            columns.Bound(c => c.Actif).Title(Label.Actif).Width(200).ClientTemplate("<div class='# if (Actif) { # enabled # } else { # disabled # } #'> <a role='button' OnClick='enableGridRow(this);' class='k-button k-button-icontext k-grid-Enabled fa fa-check' title='Activer' href='\\#'><span></span> </a>" +
+                    "<a role='button' OnClick='disableGridRow(this);' class='k-button k-button-icontext k-grid-Disabled fa fa-ban' title='Déactiver' href='\\#'><span></span> </a></div>")
+                .Filterable(f => f.Messages(x => x.IsTrue(Label.Oui).IsFalse(Label.Non)));
+            columns.Command(c =>
+            {
+                c.Edit().CancelText(Label.Annuler).UpdateText(Label.Enregistrer).Text(Label.Modifier);
+                c.Custom("CustomEffacer").Text(" ").Click("deleteRow_handler").HtmlAttributes(new { @class = "fa fa-trash fa-lg", @title = "Effacer " + Label.User, @style = "height: 31px; padding-top: 7px;" });
+            }
+                                        ).Width(160).Title(Label.ActionGrille);
+        })
+        .StandardGridConfiguration()
+        .ToolBar(t =>
+        {
+            t.Create().Text(Label.NouvelUtilisateur);
+            t.Custom().Text("Exporter en Excel").HtmlAttributes(new { href = "#", onclick = "exportToExcel()" });
+        }).Excel(excel => excel.AllPages(true).Filterable(true))
+        .Editable(editable =>
+        {
+            editable.Mode(GridEditMode.PopUp);
+            editable.DisplayDeleteConfirmation(false);
+            editable.TemplateName("~/Areas/Gestion/Views/Utilisateurs/_Editor.cshtml");
+            editable.Window(window => window.Title(Label.TitreUtilisateur).Resizable().Width(600));
+        })
+        .DataSource(dataSource => dataSource
+        .Ajax()
+        .ServerOperation(true)
+        .Events(events =>
+        {
+            events.Error("errorHandler");
+            events.RequestEnd("saveHandler");
+        })
+        .Model(model =>
+        {
+            model.Id(p => p.Id);
+            model.Field(p => p.Actif).DefaultValue(true);
+        })
+        .Read(read => read.Action("Read", "Utilisateurs", new { Area = "Gestion" }))
+        .Update(update => update.Action("Update", "Utilisateurs", new { Area = "Gestion" }))
+        .Create(create => create.Action("Create", "Utilisateurs", new { Area = "Gestion" }))
+        .Destroy(create => create.Action("Delete", "Utilisateurs", new { Area = "Gestion" }))
+            .PageSize(15)
+        ))
+</div>

@@ -1,0 +1,20 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "Code d'Erreur";
+}
+
+<br />
+<br />
+<div class="panel-group">
+    <div class="panel-heading">
+        <h1 class="text-danger">@ViewData["Title"]</h1>
+        <h2 class="text-danger">Une erreur est survenue. Veuillez contacter l'équipe technique avec les étapes pour reproduire ce problème.</h2>
+        @if (Model.ShowRequestId)
+        {
+            <h3>
+                <strong>Numéro de Requête:</strong> <code>@Model.RequestId</code>
+            </h3>
+        }
+    </div>
+</div>
+

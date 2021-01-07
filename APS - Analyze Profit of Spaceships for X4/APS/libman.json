@@ -1,0 +1,61 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "jquery@3.5.1",
+      "destination": "wwwroot/lib/jquery/"
+    },
+    {
+      "library": "jqueryui@1.12.1",
+      "destination": "wwwroot/lib/jqueryui/"
+    },
+    {
+      "library": "twitter-bootstrap@3.3.7",
+      "destination": "wwwroot/lib/twitter-bootstrap/"
+    },
+    {
+      "library": "modernizr@2.8.3",
+      "destination": "wwwroot/lib/modernizr/"
+    },
+    {
+      "library": "pnotify@3.2.1",
+      "destination": "wwwroot/lib/pnotify/"
+    },
+    {
+      "provider": "filesystem",
+      "library": "C:\\Program Files (x86)\\Progress\\Telerik UI for ASP.NET Core R3 2019\\js",
+      "destination": "wwwroot/lib/kendo-ui/js/"
+    },
+    {
+      "provider": "filesystem",
+      "library": "C:\\Program Files (x86)\\Progress\\Telerik UI for ASP.NET Core R3 2019\\styles",
+      "destination": "wwwroot/lib/kendo-ui/styles/"
+    },
+    {
+      "provider": "filesystem",
+      "library": "C:\\Program Files (x86)\\Progress\\Telerik UI for ASP.NET Core R3 2019\\typescript",
+      "destination": "wwwroot/lib/kendo-ui/typescript/"
+    },
+    {
+      "library": "animate.css@4.1.0",
+      "destination": "wwwroot/lib/animate.css/"
+    },
+    {
+      "library": "pnotify@3.2.1",
+      "destination": "wwwroot/lib/pnotify/"
+    },
+    {
+      "library": "font-awesome@5.14.0",
+      "destination": "wwwroot/lib/font-awesome/"
+    },
+    {
+      "library": "jquery-validation-unobtrusive@3.2.11",
+      "destination": "wwwroot/lib/jquery-validation-unobtrusive/"
+    },
+    {
+      "library": "jquery-validate@1.19.2",
+      "destination": "wwwroot/lib/jquery-validate/"
+    }
+  ]
+}

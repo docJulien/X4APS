@@ -1,0 +1,74 @@
+﻿@using Kendo.Mvc.UI
+@using APS.Resources
+@using APS.Areas.Gestion.Models
+@model InformationUtilisateurViewModel
+
+<div class="form-horizontal">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label class="control-label col-sm-3">@Label.Username</label>
+        <div class="col-sm-5">
+            <input asp-for="UserName" class="form-control"  />
+            <span asp-validation-for="UserName" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-sm-3">@Label.Prenom</label>
+        <div class="col-sm-5">
+            <input asp-for="FirstName" class="form-control" />
+            <span asp-validation-for="FirstName" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-sm-3">@Label.Nom</label>
+        <div class="col-sm-5">
+            <input asp-for="LastName" class="form-control" />
+            <span asp-validation-for="LastName" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-sm-3">@Label.Groupes</label>
+        <div class="col-sm-7">
+            @(Html.Kendo().MultiSelectFor(m => m.Groupes)
+                                  .DataTextField("Name")
+                                  .DataValueField("Id")
+                                  .DataSource(source => source.Read(read => read.Action("GetRoles", "Utilisateurs"))))
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-sm-3">@Label.Email</label>
+        <div class="col-sm-5">
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-sm-3">@Label.MotPasse</label>
+        <div class="col-sm-5">
+            <input asp-for="MotDePasse" class="form-control" style="width:148.79px" autocomplete="new-password" />
+            <span asp-validation-for="MotDePasse" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-sm-3">@Label.MotPasseConfirmer</label>
+        <div class="col-sm-5">
+            <input asp-for="ConfirmationMotDePasse" class="form-control" style="width:148.79px" autocomplete="new-password" />
+            <span asp-validation-for="ConfirmationMotDePasse" class="text-danger"></span>
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <div class="col-sm-offset-5">
+            <div class="checkbox">
+                <input asp-for="Actif" />
+            </div>
+        </div>
+    </div>
+</div>
