@@ -26,6 +26,6 @@ HUUUUGE CREDIT TO magictrip https://github.com/magictripgames/X4MagicTripLogAnal
 
 ## TODO features:
  - easy installation package for windows and linux
- - support not compressed files (beta)
  - add more statistics
- - auto import from you hard disk / refresh button in the header menu (hard to manage on other platforms)
+-use db instead of json files for data and wares.json
+-remember last used path
