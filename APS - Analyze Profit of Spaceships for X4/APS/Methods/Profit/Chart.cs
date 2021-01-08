@@ -7,15 +7,34 @@ namespace APS.Methods.Profit
 {
     public class Chart
     {
+        internal static IEnumerable<ChartShipVM> ReadShip(string userName)
+        {
+            var p = new BusinessLogic.Process();
+            var result = p.GlobalTradeOperations
+                .GroupBy(g => new {
+                    TimeRounded = g.TimeRounded,
+                    Ship = g.OurShipId
+                })
+                .Select(x => new ChartShipVM
+                {
+                    TimeRounded = x.Key.TimeRounded.ToString("D3"),
+                    Ship = x.Key.Ship,
+                    EstimatedProfit = x.Sum(s => s.EstimatedProfit),
+                    Quantity = x.Sum(s => s.Quantity),
+                    Money = x.Sum(s => s.Money)
+                }).OrderBy(x=>x.TimeRounded);
+            return result;
+        }
+
         internal static IEnumerable<ChartWareVM> GetTradeOperation(string userName)
         {
             var p = new BusinessLogic.Process();
-            return p.GlobalTradeOperations.Select(x => new TradeOperationVM().Map(x))
+            return p.GlobalTradeOperations
                 .GroupBy(x => new { x.TimeRounded //, Ware = x.ItemSold.Name
                                                   })
                 .Select(x=>new ChartWareVM
                 {
-                    TimeRounded = x.Key.TimeRounded,
+                    TimeRounded = x.Key.TimeRounded.ToString("D3"),
                     //Ware = x.Key.Ware,
                     EstimatedProfit = x.Sum(s=>s.EstimatedProfit),
                     Quantity = x.Sum(s=>s.Quantity),
@@ -42,9 +61,17 @@ namespace APS.Methods.Profit
 
     public class ChartWareVM
     {
-        public int TimeRounded { get; internal set; }
+        public string TimeRounded { get; internal set; }
         public double EstimatedProfit { get; set; }
         public string Ware { get; internal set; }
+        public int Quantity { get; internal set; }
+        public int Money { get; set; }
+    }
+    public class ChartShipVM
+    {
+        public string TimeRounded { get; internal set; }
+        public double EstimatedProfit { get; set; }
+        public string Ship { get; internal set; }
         public int Quantity { get; internal set; }
         public int Money { get; set; }
     }

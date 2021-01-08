@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Xml;
 
 //HUUUUGE CREDIT TO magictrip https://github.com/magictripgames/X4MagicTripLogAnalyzer
@@ -7,6 +8,14 @@ namespace BusinessLogic.Models
     public class TradeOperation
     {
         public double Time { get; set; }
+        public int TimeRounded
+        {
+            get
+            {
+                TimeSpan span = TimeSpan.FromSeconds(Time);
+                return (int)span.TotalHours;
+            }
+        }
         public Ship OurShip { get; set; }
         public string OurShipName => OurShip.ShipName;
         public string OurShipId => OurShip.ShipID;

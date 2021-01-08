@@ -17,6 +17,10 @@
             //chart.dataSource.filter({ field: "Year", operator: "gte", value: 2020 });
             //chart.refresh();
         });
+        function chartshDataBound(e) {
+            var axis = e.sender.options.categoryAxis;
+            axis.categories = axis.categories.sort();
+        }
     </script>
     <script src="~/js/CommonScripts.js"></script>
 }        
@@ -89,6 +93,43 @@
         <div class="grid-wrapper">
             hoping to have a chart with all ships here showing their performance
             with a ware filter and hour from to filter as well
+            @(Html.Kendo().Chart<ChartShipVM>()
+                .Name("chartsh")
+                .Title("Ships")
+                .DataSource(dataSource => dataSource
+                    .Read(read => read.Action("ReadShip", "Chart"))
+                    .Group(group => group.Add(model => model.Ship))
+                    .Sort(sort => sort.Add(model => model.TimeRounded).Ascending())
+                )
+                .Events(e => e.DataBound("chartshDataBound"))
+                .SeriesDefaults(s=> s.Line()
+                    .Style(ChartLineStyle.Smooth)
+                    .MissingValues(ChartAreaMissingValues.Zero)
+                )
+                .Series(series => {
+                      series.Line(model => model.EstimatedProfit)
+                          .Name("#= group.value #").CategoryField("TimeRounded")
+                          .Tooltip(t => 
+                              t.Visible(true).Template("#= dataItem.Ship # - #= dataItem.EstimatedProfit #$")
+
+                          );
+                })
+                .Legend(legend => legend
+                    .Position(ChartLegendPosition.Bottom)
+                )
+                .ValueAxis(axis => axis.Numeric()
+                    .Labels(labels => labels
+                        .Format("${0}")
+                        .Skip(2)
+                        .Step(2)
+                    )
+                )
+                //.CategoryAxis(axis => axis
+                //.Labels(labels => labels.Format("MMM"))
+                //)
+                )
+            
+            
         </div>
     </div>
 </div>

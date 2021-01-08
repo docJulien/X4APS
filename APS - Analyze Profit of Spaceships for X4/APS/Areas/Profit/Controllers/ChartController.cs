@@ -32,5 +32,14 @@ namespace APS.Areas.Profit.Controllers
         {
             return Json(Chart.GetTradeOperation(User.Identity.Name));
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="request"></param>        
+        [ExceptionMessages(ResourceKey = "ReadShip")]
+        public IActionResult ReadShip()
+        {
+            return Json(Chart.ReadShip(User.Identity.Name));
+        }
     }
 }
