@@ -33,7 +33,7 @@ namespace BusinessLogic
         }
 
         private void DeserializeTradeOperations(string saveFile)
-        {
+        { //todo remove this and save to bd
             if (File.Exists(saveFile))
             {
                 using (StreamReader r = new StreamReader(saveFile))
@@ -54,7 +54,7 @@ namespace BusinessLogic
 
 
         public void DeserializeConfigurations()
-        {
+        { //todo remove this and save to bd
             var applicationPath = System.Reflection.Assembly.GetExecutingAssembly().CodeBase;
             var directory = System.IO.Path.GetDirectoryName(applicationPath).Remove(0, 6);
             string configurationsFileName = directory + @"\Configurations.json";
@@ -101,12 +101,12 @@ namespace BusinessLogic
                 
                 //serialize object directly into file stream
                 serializer.Serialize(file, Configurations);
-                file.Close();
+                file.Close(); //todo remove this and save to bd
             }
         }
 
         public void DeserializeWares()
-        {
+        { //todo remove this and use bd
             string applicationPath = System.Reflection.Assembly.GetExecutingAssembly().CodeBase;
             var directory = System.IO.Path.GetDirectoryName(applicationPath).Remove(0, 6);
             List<Ware> TempWares = new List<Ware>();

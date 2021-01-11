@@ -55,8 +55,31 @@ namespace BusinessLogic
             }
 
             FileStream decompressedSaveFile = new FileStream(newFileName, FileMode.Open);
+
+            //todo performance todo #8
+            //try like this:
+            //XmlDocument doc = new XmlDocument();
+            //doc.Load("booksort.xml");
+
+            //XmlNodeList nodeList;
+            //XmlNode root = doc.DocumentElement;
+
+            //nodeList = root.SelectNodes("descendant::book[author/last-name='Austen']");
+
+            ////Change the price on the books.
+            //foreach (XmlNode book in nodeList)
+            //{
+            //    book.LastChild.InnerText = "15.95";
+            //}
+
+            //Console.WriteLine("Display the modified XML document....");
+            //doc.Save(Console.Out);
+
+
+
+
+
             XmlReader xmlSave = XmlReader.Create(decompressedSaveFile);
-            
             while (xmlSave.Read())
             {
                 if (xmlSave.NodeType == XmlNodeType.Element)
@@ -70,19 +93,13 @@ namespace BusinessLogic
                     }
                     
                 }
-                //else if (xmlSave.NodeType == XmlNodeType.Text)
-                //{
-                //    Console.WriteLine("\tVALUE: " + xmlSave.Value);
-                //}
             }
             
             foreach (TradeOperation tradeOp in tradeOperations)
             {
                 p.GlobalTradeOperations.Add(tradeOp);
-                //p.AddTradeOperationToShipList(tradeOp);
-                //p.AddTradeOperationToWareList(tradeOp);
-                tradeOp.WriteToLog();
             }
+            //todo use db and remove this
             using (StreamWriter file = File.CreateText(directory + @"\X4LogAnalyzerTempXML.json"))
             {
                 JsonSerializer serializer = new JsonSerializer();
@@ -90,9 +107,6 @@ namespace BusinessLogic
                 serializer.Serialize(file, p.GlobalTradeOperations);
                 file.Close();
             }
-            
-            //string json = JsonConvert.SerializeObject(MainWindow.GlobalTradeOperations);
-            //File.WriteAllText(directory + @"\X4LogAnalyzerTempXML.json", json);
 
             decompressedSaveFile.Close();
             if (!originalSaveFileUsed)
@@ -100,8 +114,6 @@ namespace BusinessLogic
                 Thread newThread = new Thread(Delete);
                 newThread.IsBackground = true;
                 newThread.Start(new FileInfo(newFileName));
-                //Delete(new FileInfo(newFileName));
-                //File.Delete(newFileName);
             }
         }
 
@@ -137,7 +149,7 @@ namespace BusinessLogic
                 TradeOperation currentTradeOperation = new TradeOperation(double.Parse(logEntry.Value));
                 //Console.WriteLine(string.Format("\t{0} : {1}", logEntry.Name, logEntry.Value));
                 while (logEntry.MoveToNextAttribute())
-                {
+                { //todo serialize to object may be much faster than checking strings here....
                     //Console.WriteLine(string.Format("\t{0} : {1}", logEntry.Name, logEntry.Value));
                     if ("title".Equals(logEntry.Name) && p.Configurations.Where(x => x.Key.Equals("TradeCompletedTranslation")).FirstOrDefault().Value.Equals(logEntry.Value))
                     {
@@ -146,7 +158,7 @@ namespace BusinessLogic
                     }
                     if (isATradeOperation && "text".Equals(logEntry.Name))
                     {
-                        currentTradeOperation.ParseTextEntry(logEntry, p);
+                        currentTradeOperation = new TradeOperation(logEntry, p);
                     }
                     if (isATradeOperation && "faction".Equals(logEntry.Name))
                     {
@@ -156,8 +168,8 @@ namespace BusinessLogic
                     if (isATradeOperation && "time".Equals(logEntry.Name))
                     {
                         //Console.WriteLine(string.Format("\t{0} : {1}", "Time", logEntry.Value));
-                        //currentTradeOperation = new TradeOperation(float.Parse(logEntry.Value));
-                        //tradeOperations.Add(currentTradeOperation);
+                        currentTradeOperation = new TradeOperation(float.Parse(logEntry.Value));
+                        tradeOperations.Add(currentTradeOperation);
                     }
                     if (isATradeOperation && "money".Equals(logEntry.Name))
                     {
@@ -171,9 +183,9 @@ namespace BusinessLogic
                 {
                     
                     tradeOperations.Add(currentTradeOperation);
-                    currentTradeOperation.OurShip.AddTradeOperation(currentTradeOperation);
-                    currentTradeOperation.SoldTo.AddTradeOperation(currentTradeOperation);
-                    currentTradeOperation.PartialSumByShip = currentTradeOperation.OurShip.GetListOfTradeOperations().Sum(x => x.Money);
+                    //currentTradeOperation.OurShip.AddTradeOperation(currentTradeOperation);
+                    //currentTradeOperation.SoldTo.AddTradeOperation(currentTradeOperation);
+                    //currentTradeOperation.PartialSumByShip = currentTradeOperation.OurShip.GetListOfTradeOperations().Sum(x => x.Money);
 
                 }
             }

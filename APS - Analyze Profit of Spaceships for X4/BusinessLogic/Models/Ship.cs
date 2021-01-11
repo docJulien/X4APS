@@ -11,7 +11,7 @@ namespace BusinessLogic.Models
     {
         private static List<Ship> _ShipList = new List<Ship>();
         private static List<Ship> _SoldToList = new List<Ship>();
-        private List<TradeOperation> _TradeOperationList = new List<TradeOperation>();
+       //wtf dude private List<TradeOperation> _TradeOperationList = new List<TradeOperation>();
 
         public Ship(string shipId)
         {
@@ -101,21 +101,21 @@ namespace BusinessLogic.Models
         //    return valuesToReturn;
         //}
 
-        public void AddTradeOperation(TradeOperation tradeOperation)
-        {
-            TradeOperation tradeOp = _TradeOperationList.Where(x => x.Time == tradeOperation.Time).FirstOrDefault();
-            if (tradeOp == null)
-            {
-                Console.WriteLine(string.Format("Ship: {0}; Item count: {1}, Time: {2}", this.FullShipname, _TradeOperationList.Count, tradeOperation.Time));
-                _TradeOperationList.Add(tradeOperation);
+        //public void AddTradeOperation(TradeOperation tradeOperation)
+        //{
+        //    TradeOperation tradeOp = _TradeOperationList.Where(x => x.Time == tradeOperation.Time).FirstOrDefault();
+        //    if (tradeOp == null)
+        //    {
+        //        //Console.WriteLine(string.Format("Ship: {0}; Item count: {1}, Time: {2}", this.FullShipname, _TradeOperationList.Count, tradeOperation.Time));
+        //        _TradeOperationList.Add(tradeOperation);
                 
-            }
-        }
+        //    }
+        //}
 
-        public IEnumerable<TradeOperation> GetListOfTradeOperations()
-        {
-            return _TradeOperationList;
-        }
+        //public IEnumerable<TradeOperation> GetListOfTradeOperations()
+        //{
+        //    return _TradeOperationList;
+        //}
 
         ////todo dead code?
         //public class DataPoint

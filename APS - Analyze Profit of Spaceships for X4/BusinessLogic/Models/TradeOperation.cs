@@ -7,15 +7,38 @@ namespace BusinessLogic.Models
 {
     public class TradeOperation
     {
+        public TradeOperation()
+        {
+            //This empty constructor is required for the desserialization process
+        }
+
+        public TradeOperation(double time)
+        {
+            this.Time = time;
+        }
+
+        public TradeOperation(XmlReader logEntry, Process p)
+        {
+            this.FullLogEntry = logEntry.Value;
+            this.OurShip = Ship.GetShip(TradeOperations.getShipID(logEntry.Value, p));
+            this.OurShip.ShipName = TradeOperations.getShipName(logEntry.Value, this.OurShip.ShipID, p);
+            this.Quantity = TradeOperations.getQtdSold(logEntry.Value, p);
+            this.ItemSold = Ware.GetWare(TradeOperations.getProduct(logEntry.Value, this.Quantity, p));
+            this.SoldTo = Ship.GetSoldTo(TradeOperations.getDestinationID(logEntry.Value, p));
+            this.SoldTo.ShipName = TradeOperations.getSoldToName(logEntry.Value, this.SoldTo.ShipID, p);
+
+        }
         public double Time { get; set; }
+
         public int TimeRounded
         {
             get
             {
                 TimeSpan span = TimeSpan.FromSeconds(Time);
-                return (int)span.TotalHours;
+                return (int) span.TotalHours;
             }
         }
+
         public Ship OurShip { get; set; }
         public string OurShipName => OurShip.ShipName;
         public string OurShipId => OurShip.ShipID;
@@ -41,6 +64,7 @@ namespace BusinessLogic.Models
                 {
                     estimatedSoldPrice = ItemSold.MarketMinimumPrice;
                 }
+
                 return (PricePerItem - estimatedSoldPrice) * Quantity;
             }
         }
@@ -79,45 +103,11 @@ namespace BusinessLogic.Models
         //    itemSold.AddTradeOperation(this);
         //}
 
-        //public TradeOperation()
-        //{
-        //    //This is required for the desserialization process
-        //}
+    }
 
-        public TradeOperation(double time)
-        {
-            this.Time = time;
-        }
+    public static class TradeOperations {
 
-        public void WriteToLog()
-        {
-            //Console.WriteLine("\t{");
-            //Console.WriteLine(string.Format("\t   {0} : {1}", "Time", this.Time));
-            //Console.WriteLine(string.Format("\t   {0} : {1}", "ShipId", this.OurShip.ShipID));
-            //Console.WriteLine(string.Format("\t   {0} : {1}", "ShipName", this.OurShip.ShipName));
-            //Console.WriteLine(string.Format("\t   {0} : {1}", "Quantity", this.Quantity));
-            //Console.WriteLine(string.Format("\t   {0} : {1}", "Product", this.ItemSold.Name));
-            //Console.WriteLine(string.Format("\t   {0} : {1}", "SoldToID", this.SoldTo.ShipID));
-            //Console.WriteLine(string.Format("\t   {0} : {1}", "SoldToName", this.SoldTo.ShipName));
-            //Console.WriteLine(string.Format("\t   {0} : {1}", "Faction", this.Faction));
-            //Console.WriteLine(string.Format("\t   {0} : {1}", "Money", this.Money));
-            //Console.WriteLine(string.Format("\t   {0} : {1}", "FullLogEntry", this.FullLogEntry));
-            //Console.WriteLine("\t}");
-        }
-
-        public void ParseTextEntry(XmlReader logEntry, Process p)
-        {
-            this.FullLogEntry = logEntry.Value;
-            this.OurShip = Ship.GetShip(getShipID(logEntry.Value, p));
-            this.OurShip.ShipName = getShipName(logEntry.Value, this.OurShip.ShipID, p);
-            this.Quantity = getQtdSold(logEntry.Value, p);
-            this.ItemSold = Ware.GetWare(getProduct(logEntry.Value, this.Quantity, p));
-            this.SoldTo = Ship.GetSoldTo(getDestinationID(logEntry.Value, p));
-            this.SoldTo.ShipName = getSoldToName(logEntry.Value, this.SoldTo.ShipID, p);
-            
-        }
-
-        private static string getDestinationID(string logEntry, Process p)
+        public static string getDestinationID(string logEntry, Process p)
         {
             int position;
             string configEntry = p.Configurations.Where(x => x.Key.Equals("InTranslation")).FirstOrDefault().Value;
@@ -133,7 +123,7 @@ namespace BusinessLogic.Models
             }
         }
 
-        private static string getSoldToName(string logEntry, string soldToId, Process p)
+        public static string getSoldToName(string logEntry, string soldToId, Process p)
         {
             string configEntryIn = p.Configurations.Where(x => x.Key.Equals("InTranslation")).FirstOrDefault().Value;
             configEntryIn = " " + configEntryIn.Trim() + " ";
@@ -159,7 +149,7 @@ namespace BusinessLogic.Models
             }
         }
 
-        private static string getShipID(string logEntry, Process p)
+        public static string getShipID(string logEntry, Process p)
         {
             string configEntry = p.Configurations.Where(x => x.Key.Equals("SoldTranslation")).FirstOrDefault().Value;
             configEntry = " " + configEntry.Trim() + " ";
@@ -176,7 +166,7 @@ namespace BusinessLogic.Models
             return "";
         }
 
-        private static string getShipName(string logEntry, string shipID, Process p)
+        public static string getShipName(string logEntry, string shipID, Process p)
         {
             string configEntry = p.Configurations.Where(x => x.Key.Equals("SoldTranslation")).FirstOrDefault().Value;
             configEntry = " " + configEntry.Trim() + " ";
@@ -193,7 +183,7 @@ namespace BusinessLogic.Models
             return "";
         }
 
-        private static int getQtdSold(string logEntry, Process p)
+        public static int getQtdSold(string logEntry, Process p)
         {
             string configEntry = p.Configurations.Where(x => x.Key.Equals("SoldTranslation")).FirstOrDefault().Value;
             configEntry = " " + configEntry.Trim() + " ";
@@ -213,7 +203,7 @@ namespace BusinessLogic.Models
             return 0;
         }
 
-        private static string getProduct(string logEntry, int qtdSold, Process p)
+        public static string getProduct(string logEntry, int qtdSold, Process p)
         {
             string configEntrySold = p.Configurations.Where(x => x.Key.Equals("SoldTranslation")).FirstOrDefault().Value;
             configEntrySold = " " + configEntrySold.Trim() + " ";

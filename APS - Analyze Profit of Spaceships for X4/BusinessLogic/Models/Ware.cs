@@ -6,7 +6,7 @@ namespace BusinessLogic.Models
 {
     public class Ware
     {
-        private List<TradeOperation> _TradeOperationList = new List<TradeOperation>();
+        //private List<TradeOperation> _TradeOperationList = new List<TradeOperation>();
         //private static List<Ware> _WareList = MainWindow.GlobalWares;
 
         //public Ware(string ware)
@@ -25,10 +25,10 @@ namespace BusinessLogic.Models
         public string TransportType { get; set; }
         public double MarketMinimumPrice { get; set; }
 
-        public List<TradeOperation> GetTradeOperations()
-        {
-            return _TradeOperationList;
-        }
+        //public List<TradeOperation> GetTradeOperations()
+        //{
+        //    return _TradeOperationList;
+        //}
 
         public double MarketAveragePrice { get; set; }
         public double MarketMaximumPrice { get; set; }
@@ -54,16 +54,16 @@ namespace BusinessLogic.Models
             return ware;
         }
 
-        internal void AddTradeOperation(TradeOperation tradeOperation)
-        {
-            TradeOperation tradeOp = _TradeOperationList.Where(x => x.Time == tradeOperation.Time).FirstOrDefault();
-            if (tradeOp == null)
-            {
-                //tradeOp.ItemSold = this;
-                tradeOperation.PartialSumByWare = _TradeOperationList.Sum(x => x.Money) + tradeOperation.Money;
-                _TradeOperationList.Add(tradeOperation);
+        //internal void AddTradeOperation(TradeOperation tradeOperation)
+        //{
+        //    TradeOperation tradeOp = _TradeOperationList.Where(x => x.Time == tradeOperation.Time).FirstOrDefault();
+        //    if (tradeOp == null)
+        //    {
+        //        //tradeOp.ItemSold = this;
+        //        tradeOperation.PartialSumByWare = _TradeOperationList.Sum(x => x.Money) + tradeOperation.Money;
+        //        _TradeOperationList.Add(tradeOperation);
 
-            }
-        }
+        //    }
+        //}
     }
 }
