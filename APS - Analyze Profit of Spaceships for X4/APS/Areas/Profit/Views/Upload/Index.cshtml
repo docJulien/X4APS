@@ -98,7 +98,7 @@
         <div class="grid-wrapper">
             @(Html.Kendo().PivotGrid<TradeOperationVM>()
                 .Name("pivotgrid")
-                //.Configurator("#configurator")
+                .Configurator("#configurator")
                 .ColumnWidth(120)
                 .Filterable(true)
                 .Sortable(true)
@@ -111,16 +111,17 @@
                             {
                                 dimensions.Add(model => model.TimeRounded).Caption("All Time");
                                 dimensions.Add(model => model.ItemSoldId).Caption("All Wares");
+                                dimensions.Add(model => model.Sector).Caption("All Sector");
                                 dimensions.Add(model => model.Faction).Caption("All Factions");
+                                dimensions.Add(model => model.SoldToId).Caption("All Buyers");
                                 dimensions.Add(model => model.OurShipId).Caption("All Ships");
-                                dimensions.Add(model => model.SoldToId).Caption("All Buyer");
                             })
                             .Measures(measures =>
                             {
-                                measures.Add("EstimatedProfit").Field(model => model.EstimatedProfit).AggregateName("sum").Format("{0:n2}");
-                                measures.Add("Money").Field(model => model.Money).AggregateName("sum").Format("{0:n2}");
-                                measures.Add("PricePerItem").Field(model => model.PricePerItem).AggregateName("sum").Format("{0:n2}");
-                                measures.Add("Quantity").Field(model => model.Quantity).AggregateName("sum").Format("{0:n2}");
+                                measures.Add("EstimatedProfit").Field(model => model.EstimatedProfit).AggregateName("sum").Format("{0:n0}");
+                                measures.Add("Money").Field(model => model.Money).AggregateName("sum").Format("{0:n0}");
+                                measures.Add("PricePerItem").Field(model => model.PricePerItem).AggregateName("sum").Format("{0:n0}");
+                                measures.Add("Quantity").Field(model => model.Quantity).AggregateName("sum").Format("{0:n0}");
                             })))
                     .Columns(columns =>
                     {
@@ -142,13 +143,13 @@
                     columns.Bound(c => c.ItemSoldId).Title("Ware");
                     columns.Bound(c => c.OurShipId).Title("Ship ID");
                     columns.Bound(c => c.OurShipName).Title("Ship");
+                    columns.Bound(c => c.Sector);
+                    columns.Bound(c => c.Faction);
                     columns.Bound(c => c.SoldToId).Title("Sold To Id");
                     columns.Bound(c => c.SoldToName).Title("Sold To");
-                    columns.Bound(c => c.Faction);
-                    columns.Bound(c => c.InventorySpaceUsed);
                     columns.Bound(c => c.Quantity);
-                    columns.Bound(c => c.Money).Format("{0:n2}").Width(181);
-                    columns.Bound(c => c.EstimatedProfit).Format("{0:n2}").Width(181);
+                    columns.Bound(c => c.Money).Format("{0:n0}").Width(181);
+                    columns.Bound(c => c.EstimatedProfit).Format("{0:n0}").Width(181);
                 })
                 .StandardGridConfiguration()
                 .ToolBar(t =>
