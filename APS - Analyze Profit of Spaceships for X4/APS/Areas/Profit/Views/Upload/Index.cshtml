@@ -98,9 +98,10 @@
         <div class="grid-wrapper">
             @(Html.Kendo().PivotGrid<TradeOperationVM>()
                 .Name("pivotgrid")
-                .Configurator("#configurator")
+                //.Configurator("#configurator")
                 .ColumnWidth(120)
                 .Filterable(true)
+                .Sortable(true)
                 .DataSource(dataSource => dataSource
                     .Ajax()
                     .Transport(transport => transport.Read("Read", "Upload"))
@@ -111,7 +112,7 @@
                                 dimensions.Add(model => model.TimeRounded).Caption("All Time");
                                 dimensions.Add(model => model.ItemSoldId).Caption("All Wares");
                                 dimensions.Add(model => model.Faction).Caption("All Factions");
-                                //todo not working? dimensions.Add(model => model.OurShip.ShipID).Caption("All Ships");
+                                dimensions.Add(model => model.OurShipId).Caption("All Ships");
                             })
                             .Measures(measures =>
                             {
@@ -138,7 +139,7 @@
                     columns.Bound(c => c.Time);
                     columns.Bound(c => c.TimeRounded).Title("Hour");
                     columns.Bound(c => c.ItemSoldId).Title("Ware");
-                    columns.Bound(c => c.OurShipID).Title("Ship ID");
+                    columns.Bound(c => c.OurShipId).Title("Ship ID");
                     columns.Bound(c => c.OurShipName).Title("Ship");
                     columns.Bound(c => c.SoldToId).Title("Sold To Id");
                     columns.Bound(c => c.SoldToName).Title("Sold To");

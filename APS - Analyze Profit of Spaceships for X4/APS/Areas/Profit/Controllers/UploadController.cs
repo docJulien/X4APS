@@ -39,7 +39,8 @@ namespace APS.Areas.Profit.Controllers
             //request.Sorts.Add(new SortDescriptor("Time", ListSortDirection.Ascending));
             //return Json(CommonMethods.GetDataResult<TradeOperation, TradeOperationVM>(request));
             var p = new Process();
-            return Json(p.GlobalTradeOperations.Select(x=>new TradeOperationVM().Map(x)).ToDataSourceResult(request));
+            var result = p.GlobalTradeOperations.Select(x => new TradeOperationVM().Map(x));
+            return Json(result.ToDataSourceResult(request));
         }
 
         public IActionResult Index()

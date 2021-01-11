@@ -14,7 +14,7 @@ namespace APS.Areas.Profit.Models
             }
         }
         public string OurShipName { get; set; }
-        public string OurShipID { get; set; }
+        public string OurShipId { get; set; }
         public string ItemSoldId { get; set; }
         public string SoldToName { get; set; }
         public string SoldToId { get; set; }

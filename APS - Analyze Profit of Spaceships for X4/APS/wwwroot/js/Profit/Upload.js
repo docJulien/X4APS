@@ -10,7 +10,8 @@
             data: {
                 "filePath": $("#fileServerSide").val()
             },
-            complete: function() {
+            complete: function () {
+                Upload.OnComplete();
                 kendo.ui.progress($("body"), false);
             },
             success: function() {
