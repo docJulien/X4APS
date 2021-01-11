@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Threading;
 using System.Xml;
+using System.Xml.Linq;
 using BusinessLogic.Models;
 using Newtonsoft.Json;
 
@@ -54,8 +55,6 @@ namespace BusinessLogic
                 }
             }
 
-            FileStream decompressedSaveFile = new FileStream(newFileName, FileMode.Open);
-
             //todo performance todo #8
             //try like this:
             //XmlDocument doc = new XmlDocument();
@@ -76,29 +75,26 @@ namespace BusinessLogic
             //doc.Save(Console.Out);
 
 
+            //Load xml
+            XDocument xdoc = XDocument.Load(newFileName);
+            // <log><entry time="50395.876" category="upkeep"
+            // title="Trade Completed"
+            // text="Magpie MCY-890 sold 350 Silicon to TEL Silicon Refinery I VUU-215 in Eighteen Billion for 52493 Cr."
+            // faction="{20203,601}"
+            // money="5249300"/>
 
-
-
-            XmlReader xmlSave = XmlReader.Create(decompressedSaveFile);
-            while (xmlSave.Read())
-            {
-                if (xmlSave.NodeType == XmlNodeType.Element)
-                {
-                    if (xmlSave.Name == "entry" || xmlSave.Name == "entry")
-                    {
-                        if (xmlSave.HasAttributes)
-                        {
-                            writeLogEntry(xmlSave, p);
-                        }
-                    }
-                    
-                }
-            }
+            //</root>
+            //Run query
+            double startFrom = 0;
+            p.GlobalTradeOperations = (from entry in xdoc.Descendants("log").Descendants("entry")
+                where entry.Attribute("title").Value == "Trade Completed"
+                    && double.Parse(entry.Attribute("time").Value) > startFrom
+                         select new TradeOperation(entry.Attribute("text").Value) {
+                             Time = double.Parse(entry.Attribute("time").Value),
+                             //Faction = entry.Attribute("faction").Value,
+                             Money = int.Parse(entry.Attribute("money")?.Value ?? "0")}
+                ).ToList();
             
-            foreach (TradeOperation tradeOp in tradeOperations)
-            {
-                p.GlobalTradeOperations.Add(tradeOp);
-            }
             //todo use db and remove this
             using (StreamWriter file = File.CreateText(directory + @"\X4LogAnalyzerTempXML.json"))
             {
@@ -108,7 +104,7 @@ namespace BusinessLogic
                 file.Close();
             }
 
-            decompressedSaveFile.Close();
+            //todo cleanup decompressedSaveFile.Close();
             if (!originalSaveFileUsed)
             {
                 Thread newThread = new Thread(Delete);
@@ -130,64 +126,6 @@ namespace BusinessLogic
 
                 decompressedFileStream.Flush();
                 decompressedFileStream.Close();
-            }
-        }
-
-        private static void writeLogEntry(XmlReader logEntry, Process p)
-        {
-            logEntry.MoveToNextAttribute();
-            //List<TradeOperation> tradeOperations = new List<TradeOperation>();
-            
-            bool isATradeOperation = false;
-            if ("time".Equals(logEntry.Name))
-            {
-                if (p.GlobalTradeOperations.Find(x => x.Time == double.Parse(logEntry.Value)) != null)
-                {
-                    //This item already exists in the list
-                    return;
-                }
-                TradeOperation currentTradeOperation = new TradeOperation(double.Parse(logEntry.Value));
-                //Console.WriteLine(string.Format("\t{0} : {1}", logEntry.Name, logEntry.Value));
-                while (logEntry.MoveToNextAttribute())
-                { //todo serialize to object may be much faster than checking strings here....
-                    //Console.WriteLine(string.Format("\t{0} : {1}", logEntry.Name, logEntry.Value));
-                    if ("title".Equals(logEntry.Name) && p.Configurations.Where(x => x.Key.Equals("TradeCompletedTranslation")).FirstOrDefault().Value.Equals(logEntry.Value))
-                    {
-                        isATradeOperation = true;
-
-                    }
-                    if (isATradeOperation && "text".Equals(logEntry.Name))
-                    {
-                        currentTradeOperation = new TradeOperation(logEntry, p);
-                    }
-                    if (isATradeOperation && "faction".Equals(logEntry.Name))
-                    {
-                        currentTradeOperation.Faction = logEntry.Value;
-                        //Console.WriteLine(string.Format("\t{0} : {1}", "Faction", logEntry.Value));
-                    }
-                    if (isATradeOperation && "time".Equals(logEntry.Name))
-                    {
-                        //Console.WriteLine(string.Format("\t{0} : {1}", "Time", logEntry.Value));
-                        currentTradeOperation = new TradeOperation(float.Parse(logEntry.Value));
-                        tradeOperations.Add(currentTradeOperation);
-                    }
-                    if (isATradeOperation && "money".Equals(logEntry.Name))
-                    {
-                        int money = int.Parse(logEntry.Value);
-                        money = (money / 100);
-                        currentTradeOperation.Money = money;
-                        //Console.WriteLine(string.Format("\t{0} : {1}", "money", money));
-                    }
-                }
-                if (isATradeOperation)
-                {
-                    
-                    tradeOperations.Add(currentTradeOperation);
-                    //currentTradeOperation.OurShip.AddTradeOperation(currentTradeOperation);
-                    //currentTradeOperation.SoldTo.AddTradeOperation(currentTradeOperation);
-                    //currentTradeOperation.PartialSumByShip = currentTradeOperation.OurShip.GetListOfTradeOperations().Sum(x => x.Money);
-
-                }
             }
         }
 

@@ -22,7 +22,7 @@ namespace APS.Areas.Profit.Models
         public string Faction { get; set; }
         public double InventorySpaceUsed { get; set; }
         public int Money { get; set; }
-        public double PricePerItem { get { return (Money / Quantity); } }
+        public double PricePerItem => Quantity == 0 ? 0 : Money / Quantity;
         public double EstimatedProfit { get; set; }
     }
 }

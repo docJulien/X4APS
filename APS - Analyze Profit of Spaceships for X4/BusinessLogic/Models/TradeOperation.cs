@@ -16,18 +16,39 @@ namespace BusinessLogic.Models
         {
             this.Time = time;
         }
-
-        public TradeOperation(XmlReader logEntry, Process p)
+        public TradeOperation(string fullLogEntry)
         {
-            this.FullLogEntry = logEntry.Value;
-            this.OurShip = Ship.GetShip(TradeOperations.getShipID(logEntry.Value, p));
-            this.OurShip.ShipName = TradeOperations.getShipName(logEntry.Value, this.OurShip.ShipID, p);
-            this.Quantity = TradeOperations.getQtdSold(logEntry.Value, p);
-            this.ItemSold = Ware.GetWare(TradeOperations.getProduct(logEntry.Value, this.Quantity, p));
-            this.SoldTo = Ship.GetSoldTo(TradeOperations.getDestinationID(logEntry.Value, p));
-            this.SoldTo.ShipName = TradeOperations.getSoldToName(logEntry.Value, this.SoldTo.ShipID, p);
+            //debug this.FullLogEntry = fullLogEntry;   
+            // text="Magpie MCY-890 sold 350 Silicon to TEL Silicon Refinery I VUU-215 in Eighteen Billion for 52493 Cr."
+            var sold = fullLogEntry.IndexOf(" sold ");
+            var qty = sold + 6;
+            if (sold == -1)
+            {
+                sold = fullLogEntry.IndexOf(" bought ");
+                qty = sold + 8;
+            }
 
+            var shipname = fullLogEntry.LastIndexOf(' ', sold-1, sold);
+            var ware = fullLogEntry.IndexOf(' ', qty);
+            var to = fullLogEntry.IndexOf(" to ", sold);
+            var tofaction = fullLogEntry.IndexOf(' ', to+4);
+            var inlocation = fullLogEntry.IndexOf(" in ", to);
+            var toid = fullLogEntry.LastIndexOf(' ', inlocation-5, inlocation- tofaction);
+            var formoney = fullLogEntry.IndexOf(" for ", inlocation);
+
+            OurShipName = fullLogEntry.Substring(0, shipname);
+            OurShipId = fullLogEntry.Substring(shipname+1, sold-shipname).TrimEnd();
+            Quantity = int.Parse(fullLogEntry.Substring(qty, ware- qty).Trim());
+            ItemSoldId = fullLogEntry.Substring(ware+1, to-ware-1);
+            Faction = fullLogEntry.Substring(to+4, tofaction - to - 4);
+            if (toid - tofaction - 1 < 1)
+                SoldToName = Faction;
+            else
+                SoldToName = fullLogEntry.Substring(tofaction+1, toid - tofaction - 1);
+            SoldToId = fullLogEntry.Substring(toid + 1, inlocation - toid - 1);
+            Sector = fullLogEntry.Substring(inlocation+4, formoney - inlocation-4);
         }
+
         public double Time { get; set; }
 
         public int TimeRounded
@@ -38,21 +59,16 @@ namespace BusinessLogic.Models
                 return (int) span.TotalHours;
             }
         }
-
-        public Ship OurShip { get; set; }
-        public string OurShipName => OurShip.ShipName;
-        public string OurShipId => OurShip.ShipID;
-
-        public string FullLogEntry { get; set; }
-        public Ware ItemSold { get; set; }
-        public string ItemSoldId => ItemSold.WareID;
-        public int Quantity { get; set; }
-        public Ship SoldTo { get; set; }
-        public string SoldToName => SoldTo.ShipName;
-        public string SoldToId => SoldTo.ShipID;
-        public string Faction { get; set; }
+        public string OurShipName { get; }
+        public string OurShipId { get; }
+        public string ItemSoldId { get; }
+        public int Quantity { get; }
+        public string SoldToName { get; }
+        public string SoldToId { get; }
+        public string Sector { get; }
+        public string Faction { get; }
         public int Money { get; set; }
-        public double PricePerItem => (Money / Quantity);
+        public double PricePerItem => (Quantity == 0 ? 0 : Money / Quantity);
 
         public double EstimatedProfit
         {
@@ -60,10 +76,11 @@ namespace BusinessLogic.Models
             {
                 double estimatedSoldPrice = 0;
                 //I am disconsidering Ware price when it's a primary product (stored on Solid or Liquid storage)
-                if ("Container".Equals(ItemSold.TransportType))
-                {
-                    estimatedSoldPrice = ItemSold.MarketMinimumPrice;
-                }
+                //if ("Container".Equals(ItemSold.TransportType))
+                //{
+                //todo!! if (SoldToName == "Container")
+                //todo!!    estimatedSoldPrice = ItemSold.MarketMinimumPrice;
+                //}
 
                 return (PricePerItem - estimatedSoldPrice) * Quantity;
             }
