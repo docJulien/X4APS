@@ -4,44 +4,34 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading;
-using System.Xml;
 using System.Xml.Linq;
 using BusinessLogic.Models;
-using Newtonsoft.Json;
 
 namespace BusinessLogic
 {
     public static class ImportLog
     {
-        private static List<TradeOperation> tradeOperations = new List<TradeOperation>();
-        
-        public static void InputDialog(string filePath)
+        public static List<TradeOperation> InputDialog(string filePath, List<Configuration> configurations, double startTime)
         {
             if (filePath == null || "".Equals(filePath))
             {
-                return;
+                return null;
             }
             string path = Environment.ExpandEnvironmentVariables(filePath);
             
-            var p = new Process();
-            p.Configurations.Where(x => x.Key.Equals("LastSaveGameLoaded")).FirstOrDefault().Value = path;
-
-            p.SaveConfigurations();
-
-            //todo logbuilder interface Console.WriteLine(@path);
+            configurations.Where(x => x.Key.Equals("LastSaveGameLoaded")).FirstOrDefault().Value = path;
+            
             FileInfo compressedSaveFile = new FileInfo(path);
-            Decompress(compressedSaveFile, p);
+            return Decompress(compressedSaveFile, startTime);
         }
 
-        private static void Decompress(FileInfo fileToDecompress, Process p)
+        private static List<TradeOperation> Decompress(FileInfo fileToDecompress, double startTime)
         {
             string currentFileName = fileToDecompress.FullName;
             string newFileName = currentFileName.Remove(currentFileName.Length - fileToDecompress.Extension.Length);
             string applicationPath = System.Reflection.Assembly.GetExecutingAssembly().CodeBase;
             var directory = System.IO.Path.GetDirectoryName(applicationPath).Remove(0, 6);
-
-            p.DeserializeWares();
-
+            
             var originalSaveFileUsed = fileToDecompress.Extension.ToLower().EndsWith("xml");
             if (originalSaveFileUsed)
                 newFileName = fileToDecompress.FullName;
@@ -55,26 +45,6 @@ namespace BusinessLogic
                 }
             }
 
-            //todo performance todo #8
-            //try like this:
-            //XmlDocument doc = new XmlDocument();
-            //doc.Load("booksort.xml");
-
-            //XmlNodeList nodeList;
-            //XmlNode root = doc.DocumentElement;
-
-            //nodeList = root.SelectNodes("descendant::book[author/last-name='Austen']");
-
-            ////Change the price on the books.
-            //foreach (XmlNode book in nodeList)
-            //{
-            //    book.LastChild.InnerText = "15.95";
-            //}
-
-            //Console.WriteLine("Display the modified XML document....");
-            //doc.Save(Console.Out);
-
-
             //Load xml
             XDocument xdoc = XDocument.Load(newFileName);
             // <log><entry time="50395.876" category="upkeep"
@@ -85,32 +55,23 @@ namespace BusinessLogic
 
             //</root>
             //Run query
-            double startFrom = 0;
-            p.GlobalTradeOperations = (from entry in xdoc.Descendants("log").Descendants("entry")
+            var tradeOperations = (from entry in xdoc.Descendants("log").Descendants("entry")
                 where entry.Attribute("title").Value == "Trade Completed"
-                    && double.Parse(entry.Attribute("time").Value) > startFrom
-                         select new TradeOperation(entry.Attribute("text").Value) {
+                    && double.Parse(entry.Attribute("time").Value) > startTime
+                        select new TradeOperation(entry.Attribute("text").Value) {
                              Time = double.Parse(entry.Attribute("time").Value),
                              //Faction = entry.Attribute("faction").Value,
                              Money = int.Parse(entry.Attribute("money")?.Value ?? "0")}
                 ).ToList();
             
-            //todo use db and remove this
-            using (StreamWriter file = File.CreateText(directory + @"\X4LogAnalyzerTempXML.json"))
-            {
-                JsonSerializer serializer = new JsonSerializer();
-                //serialize object directly into file stream
-                serializer.Serialize(file, p.GlobalTradeOperations);
-                file.Close();
-            }
-
-            //todo cleanup decompressedSaveFile.Close();
             if (!originalSaveFileUsed)
             {
                 Thread newThread = new Thread(Delete);
                 newThread.IsBackground = true;
                 newThread.Start(new FileInfo(newFileName));
             }
+
+            return tradeOperations;
         }
 
         private static void NewMethod(FileInfo fileToDecompress, string newFileName, FileStream originalFileStream)

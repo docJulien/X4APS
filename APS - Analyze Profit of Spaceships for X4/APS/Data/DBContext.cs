@@ -9,7 +9,10 @@ namespace APS.Model
     public partial class DBContext : IdentityDbContext<ApplicationUser>
     {
         public virtual DbSet<Log> Logs { get; set; }
-        //todo public virtual DbSet<TradeOperation> UploadData { get; set; }
+        public virtual DbSet<TradeOperation> TradeOperations { get; set; }
+        
+        public virtual DbSet<Ware> Wares { get; set; }
+        public virtual DbSet<Configuration> Configurations { get; set; }
 
         public static readonly Microsoft.Extensions.Logging.LoggerFactory _myLoggerFactory =
             new LoggerFactory(new[] {

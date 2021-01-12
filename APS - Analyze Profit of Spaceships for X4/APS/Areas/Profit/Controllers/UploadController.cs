@@ -6,8 +6,11 @@ using Microsoft.AspNetCore.Authorization;
 using System.Linq;
 using System.Threading.Tasks;
 using APS.Areas.Profit.Models;
+using APS.Methods.Common;
 using APS.Methods.QueriesExtensions;
+using APS.Model;
 using BusinessLogic;
+using BusinessLogic.Models;
 using Kendo.Mvc.Extensions;
 using Microsoft.Extensions.Logging;
 
@@ -37,10 +40,7 @@ namespace APS.Areas.Profit.Controllers
             //    request.Sorts = new List<SortDescriptor>();
             //request.Sorts.Clear();
             //request.Sorts.Add(new SortDescriptor("Time", ListSortDirection.Ascending));
-            //return Json(CommonMethods.GetDataResult<TradeOperation, TradeOperationVM>(request));
-            var p = new Process();
-            var result = p.GlobalTradeOperations.Select(x => new TradeOperationVM().Map(x));
-            return Json(result.ToDataSourceResult(request));
+            return Json(CommonMethods.GetDataResult<TradeOperation, TradeOperationVM>(request));
         }
 
         public IActionResult Index()
@@ -64,18 +64,13 @@ namespace APS.Areas.Profit.Controllers
             return Content("");
         }
 
-        //public ActionResult Save(IEnumerable<IFormFile> files)
-        //{
-        //    Methods.Profit.Upload.Save(files, User, _logger);
-
-        //    // Return an empty string to signify success
-        //    return Content("");
-        //}
-
         public async Task<IActionResult> ClearData()
         {
-            throw new NotImplementedException();
-            //todo delete data
+            using (var db = new DBContext())
+            {
+                db.TradeOperations.RemoveRange(db.TradeOperations);
+                db.SaveChanges();
+            }
             _logger.LogInformation("Cleared Profit data of " + User.Identity.Name);
             return Json(new[] { true });
         }
