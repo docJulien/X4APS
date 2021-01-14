@@ -148,8 +148,9 @@
                     columns.Bound(c => c.SoldToId).Title("Sold To Id");
                     columns.Bound(c => c.SoldToName).Title("Sold To");
                     columns.Bound(c => c.Quantity);
-                    columns.Bound(c => c.Money).Format("{0:n0}").Width(181);
-                    columns.Bound(c => c.EstimatedProfit).Format("{0:n0}").Width(181);
+                    columns.Bound(c => c.Money).Format("{0:n0}").Width(81);
+                    columns.Bound(c => c.EstimatedProfit).Format("{0:n0}").Width(81);
+                    columns.Bound(c => c.MarketAveragePrice).Format("{0:n0}").Width(81);
                 })
                 .StandardGridConfiguration()
                 .ToolBar(t =>

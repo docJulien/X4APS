@@ -14,13 +14,13 @@ namespace BusinessLogic.Models
         public string WareID { get; set; }
         public string Name { get; set; }
         public string TransportType { get; set; }
-        public double MarketMinimumPrice { get; set; }
+        public decimal MarketMinimumPrice { get; set; }
 
-        public double MarketAveragePrice { get; set; }
-        public double MarketMaximumPrice { get; set; }
-        public double Volume { get; set; }
+        public decimal MarketAveragePrice { get; set; }
+        public decimal MarketMaximumPrice { get; set; }
+        public decimal Volume { get; set; }
 
-        public double MaxAndMinPriceDifferencePerVolume
+        public decimal MaxAndMinPriceDifferencePerVolume
         {
             get
             {

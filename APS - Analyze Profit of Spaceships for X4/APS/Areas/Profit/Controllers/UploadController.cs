@@ -1,16 +1,9 @@
-﻿using System;
-using Kendo.Mvc.UI;
+﻿using Kendo.Mvc.UI;
 using APS.Middlewares;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using System.Linq;
-using System.Threading.Tasks;
 using APS.Areas.Profit.Models;
-using APS.Methods.Common;
-using APS.Methods.QueriesExtensions;
 using APS.Model;
-using BusinessLogic;
-using BusinessLogic.Models;
 using Kendo.Mvc.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -33,15 +26,7 @@ namespace APS.Areas.Profit.Controllers
         [ExceptionMessages(ResourceKey = "Read")]
         public IActionResult Read([DataSourceRequest] DataSourceRequest request)
         {
-            //example of setting filters server side:
-            //if (request.Filters == null)
-            //    request.Filters = new List<IFilterDescriptor>();
-            //request.Filters.Add(new FilterDescriptor("User", FilterOperator.IsEqualTo, User.Identity.Name));
-            //if (request.Sorts == null)
-            //    request.Sorts = new List<SortDescriptor>();
-            //request.Sorts.Clear();
-            //request.Sorts.Add(new SortDescriptor("Time", ListSortDirection.Ascending));
-            return Json(CommonMethods.GetDataResult<TradeOperation, TradeOperationVM>(request));
+            return Json(APS.Methods.Profit.Upload.GetTradeOperation(User.Identity.Name, request));
         }
 
         public IActionResult Index()

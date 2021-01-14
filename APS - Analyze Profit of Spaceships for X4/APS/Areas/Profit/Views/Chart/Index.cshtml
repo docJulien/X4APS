@@ -1,4 +1,5 @@
-﻿@using APS.Methods.Profit
+﻿@using APS.Helpers
+@using APS.Methods.Profit
 @using Kendo.Mvc.UI
 @using APS.Resources
 @{
@@ -50,6 +51,9 @@
             </li>
             <li>
                 Ships
+            </li>
+            <li>
+                Ship Performance
             </li>
         </ul>
 
@@ -109,7 +113,7 @@
                 .Series(series => {
                       series.Line(model => model.EstimatedProfit)
                           .Name("#= group.value #").CategoryField("TimeRounded")
-                          .Tooltip(t => 
+                          .Tooltip(t =>
                               t.Visible(true).Template("#= dataItem.Ship # - #= dataItem.EstimatedProfit #$")
 
                           );
@@ -128,8 +132,41 @@
                 //.Labels(labels => labels.Format("MMM"))
                 //)
                 )
-            
-            
+
+
+        </div>
+        <div class="grid-wrapper">
+            only shows ships that have performed a trade in the log, filters by "Last X Hours activity"
+            to filter enter the exact sector or ware ID
+            @(Html.Kendo().Grid<ShipSummaryVM>()
+                .Name("Grid")
+                .Events(e => { e.ExcelExport("resetGridAfterExport"); })
+                .Columns(columns =>
+                {
+                    columns.Bound(c => c.LastActivity).Title("Last Hours");
+                    columns.Bound(c => c.Sector);
+                    columns.Bound(c => c.ItemSoldId).Title("Ware");
+                    columns.Bound(c => c.OurShipId).Title("Ship ID");
+                    columns.Bound(c => c.Quantity);
+                    columns.Bound(c => c.EstimatedProfit).Format("{0:n0}").Width(181);
+                })
+                .StandardGridConfiguration()
+                .ToolBar(t =>
+                {
+                    t.Custom().Text("Export Excel").HtmlAttributes(new {href = "#", onclick = "exportToExcel()"});
+                }).Excel(excel => excel.AllPages(true).Filterable(true))
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .ServerOperation(true)
+                    .Events(events =>
+                    {
+                        events.Error("errorHandler");
+                        events.RequestEnd("saveHandler");
+                    })
+                    .Read(read => read.Action("ReadShipPerformance", "Chart", new {Area = "Profit"}))
+                    .PageSize(100)
+                    .Sort(s => s.Add(x => x.EstimatedProfit).Ascending())
+                ))
         </div>
     </div>
 </div>

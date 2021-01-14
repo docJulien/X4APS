@@ -1,9 +1,5 @@
-﻿using System;
-using APS.Areas.Profit.Models;
-using APS.Methods.Common;
-using APS.Methods.Profit;
+﻿using APS.Methods.Profit;
 using APS.Middlewares;
-using BusinessLogic.Models;
 using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
@@ -45,6 +41,15 @@ namespace APS.Areas.Profit.Controllers
         public IActionResult ReadShip()
         {
             return Json(Chart.ReadShip(User.Identity.Name));
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="request"></param>        
+        [ExceptionMessages(ResourceKey = "ReadShipPerformance")]
+        public IActionResult ReadShipPerformance([DataSourceRequest] DataSourceRequest request)
+        {
+            return Json(Chart.GetWorstShips(request));
         }
     }
 }

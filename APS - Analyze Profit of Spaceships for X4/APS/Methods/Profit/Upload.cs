@@ -1,14 +1,40 @@
 ﻿using System;
 using System.Linq;
 using System.Security.Principal;
+using APS.Areas.Profit.Models;
 using APS.Model;
 using Kendo.Mvc.Extensions;
+using Kendo.Mvc.UI;
 using Microsoft.Extensions.Logging;
 
 namespace APS.Methods.Profit
 {
     public static class Upload
     {
+        public static DataSourceResult GetTradeOperation(string userName, DataSourceRequest request)
+        {
+            using (var db = new DBContext())
+            {
+                var result = from t in db.TradeOperations
+                    join w in db.Wares on t.ItemSoldId equals w.WareID into joinedWares
+                    from trade in joinedWares.DefaultIfEmpty()
+                    select new TradeOperationVM()
+                    {
+                        Time = t.Time,
+                        ItemSoldId = t.ItemSoldId,
+                        Quantity = t.Quantity,
+                        Money = t.Money,
+                        Faction = t.Faction,
+                        OurShipId = t.OurShipId,
+                        SoldToName = t.SoldToName,
+                        MarketAveragePrice = trade.MarketAveragePrice,
+                        Sector = t.Sector,
+                        SoldToId = t.SoldToId,
+                        OurShipName = t.OurShipName
+                    };
+                return result.ToDataSourceResult(request);
+            }
+        }
 
         internal static void Save(string fileName, IPrincipal User, ILogger _logger)
         {
