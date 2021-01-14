@@ -12,6 +12,7 @@ using APS.Model;
 using BusinessLogic;
 using BusinessLogic.Models;
 using Kendo.Mvc.Extensions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace APS.Areas.Profit.Controllers
@@ -64,12 +65,13 @@ namespace APS.Areas.Profit.Controllers
             return Content("");
         }
 
-        public async Task<IActionResult> ClearData()
+        public ActionResult ClearData()
         {
             using (var db = new DBContext())
             {
-                db.TradeOperations.RemoveRange(db.TradeOperations);
-                db.SaveChanges();
+                //todo user specific data, truncate will not work if we have a FK
+                db.Database.ExecuteSqlRaw($"TRUNCATE TABLE TradeOperations");
+                db.SaveChangesAsync();
             }
             _logger.LogInformation("Cleared Profit data of " + User.Identity.Name);
             return Json(new[] { true });

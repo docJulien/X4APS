@@ -29,18 +29,19 @@ var Upload = {
     },
     ClearData: function () {
         var url = $('#urlClearData').data('url');
+        kendo.ui.progress($("body"), true);
         $.ajax({
             url: url,
             //data: { },
             type: "POST",
             //dataType: 'json',
             success: function (result) {
-                notification("Save File", "Data Erased", "info");
                 Upload.OnComplete();
                 kendo.ui.progress($("body"), false);
+                notification("Clear Data", "Data Erased", "info");
             },
             error: function (xhr, ajaxOptions, thrownError) {
-                notification("Save File", xhr.status + " " + thrownError, "error");
+                notification("Clear Data", xhr.status + " " + thrownError, "error");
             }
         });
     }
