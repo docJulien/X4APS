@@ -148,7 +148,7 @@
                     columns.Bound(c => c.ItemSoldId).Title("Ware");
                     columns.Bound(c => c.OurShipId).Title("Ship ID");
                     columns.Bound(c => c.Quantity);
-                    columns.Bound(c => c.EstimatedProfit).Format("{0:n0}").Width(181);
+                    columns.Bound(c => c.EstimatedProfit).Format("{0:c0}").Width(181).HtmlAttributes(new { style = "text-align:right"});
                 })
                 .StandardGridConfiguration()
                 .ToolBar(t =>
