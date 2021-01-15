@@ -118,10 +118,9 @@
                             })
                             .Measures(measures =>
                             {
-                                measures.Add("EstimatedProfit").Field(model => model.EstimatedProfit).AggregateName("sum").Format("{0:n0}");
-                                measures.Add("Money").Field(model => model.Money).AggregateName("sum").Format("{0:n0}");
-                                measures.Add("PricePerItem").Field(model => model.PricePerItem).AggregateName("sum").Format("{0:n0}");
-                                measures.Add("Quantity").Field(model => model.Quantity).AggregateName("sum").Format("{0:n0}");
+                                measures.Add("EstimatedProfit").Field(model => model.EstimatedProfit).AggregateName("sum").Format("{0:c0}");
+                                measures.Add("Money").Field(model => model.CorrectedMoney).AggregateName("sum").Format("{0:c0}");
+                                measures.Add("Quantity").Field(model => model.Quantity).AggregateName("sum").Format("{0:c0}");
                             })))
                     .Columns(columns =>
                     {
@@ -148,9 +147,9 @@
                     columns.Bound(c => c.SoldToId).Title("Sold To Id");
                     columns.Bound(c => c.SoldToName).Title("Sold To");
                     columns.Bound(c => c.Quantity);
-                    columns.Bound(c => c.Money).Format("{0:n0}").Width(81);
-                    columns.Bound(c => c.EstimatedProfit).Format("{0:n0}").Width(81);
-                    columns.Bound(c => c.MarketAveragePrice).Format("{0:n0}").Width(81);
+                    columns.Bound(c => c.CorrectedMoney).Format("{0:c0}").Width(81);
+                    columns.Bound(c => c.EstimatedProfit).Format("{0:c0}").Width(81);
+                    columns.Bound(c => c.WareMarketAveragePrice).Format("{0:c0}").Width(81);
                 })
                 .StandardGridConfiguration()
                 .ToolBar(t =>

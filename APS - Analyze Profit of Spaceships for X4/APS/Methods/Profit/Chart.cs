@@ -1,13 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using APS.Areas.Profit.Models;
-using APS.Methods.Common;
 using APS.Model;
-using BusinessLogic.Models;
 using Kendo.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace APS.Methods.Profit
 {
@@ -26,7 +23,8 @@ namespace APS.Methods.Profit
                             ItemSoldId = t.ItemSoldId,
                             Quantity = t.Quantity,
                             Money = t.Money,
-                            MarketAveragePrice = trade.MarketAveragePrice
+                            WareMarketAveragePrice = trade.MarketAveragePrice,
+                            WareTransportTypeContainer = trade.TransportType == "Container"
                         }).ToList() //todo use iqueryable until the end for perf
                 .GroupBy(g => new {
                     TimeRounded = g.TimeRounded,
@@ -38,7 +36,7 @@ namespace APS.Methods.Profit
                     Ship = x.Key.Ship,
                     EstimatedProfit = x.Sum(s => s.EstimatedProfit),
                     Quantity = x.Sum(s => s.Quantity),
-                    Money = x.Sum(s => s.Money)
+                    Money = x.Sum(s => s.CorrectedMoney)
                 }).OrderBy(x=>x.TimeRounded);
                 return result.ToList();
             }
@@ -57,7 +55,8 @@ namespace APS.Methods.Profit
                             ItemSoldId = t.ItemSoldId,
                             Quantity = t.Quantity,
                             Money = t.Money,
-                            MarketAveragePrice = trade.MarketAveragePrice
+                            WareMarketAveragePrice = trade.MarketAveragePrice,
+                            WareTransportTypeContainer = trade.TransportType == "Container"
                         }).ToList() //todo use iqueryable until the end for perf
                        .GroupBy(x =>
                            x.TimeRounded
@@ -68,7 +67,7 @@ namespace APS.Methods.Profit
                            //Ware = x.Key.Ware,
                            EstimatedProfit = x.Sum(s => s.EstimatedProfit),
                            Quantity = x.Sum(s => s.Quantity),
-                           Money = x.Sum(s => s.Money)
+                           Money = x.Sum(s => s.CorrectedMoney)
                        });
 
                 return result.ToList();
@@ -78,25 +77,26 @@ namespace APS.Methods.Profit
         {
             using (var db = new DBContext())
             {
-                var filterLastActivty = int.Parse(((FilterDescriptor) request.Filters
+                List<FilterDescriptor> filters = GetFilters(request.Filters).Select(x=>(FilterDescriptor)x).ToList();
+
+                var filterLastActivity =   int.Parse(filters
                                                       .FirstOrDefault(x =>
-                                                          ((FilterDescriptor) x).Member == "LastActivity"))?.Value
-                                                  .ToString() ?? "2"); //DEFAULT 2 HOURS
+                                                          (x).Member == "LastActivity")?.Value
+                                                  .ToString()
+                                                      ?.Trim() ?? "2"); //DEFAULT 2 HOURS
                 var lastActivity = db.TradeOperations.Max(x => x.Time);
 
                 var wares = db.Wares.Select(x => x);
                 var source = db.TradeOperations.Where(x =>
-                    x.Time >= lastActivity - filterLastActivty*60*60 && x.Money != 0 && x.Quantity != 0);
+                    x.Time >= lastActivity - filterLastActivity * 60*60 && x.Money != 0 && x.Quantity != 0);
                 var shipList = db.TradeOperations.Select(x => x.OurShipId).Distinct();
 
-                var filterWare = ((FilterDescriptor) request.Filters
-                        .FirstOrDefault(x => ((FilterDescriptor) x).Member == "ItemSoldId"))?.Value
-                    ?.ToString() ?? string.Empty;
+                var filterWare = filters
+                        .FirstOrDefault(x => ( x).Member == "ItemSoldId")?.Value.ToString() ?? string.Empty;
                 if (!string.IsNullOrWhiteSpace(filterWare))
                     source = source.Where(x => x.ItemSoldId == filterWare);
-                var filterSector = ((FilterDescriptor) request.Filters
-                        .FirstOrDefault(x => ((FilterDescriptor) x).Member == "Sector"))?.Value
-                    ?.ToString() ?? string.Empty;
+                var filterSector = filters.FirstOrDefault(x => (x).Member == "Sector")
+                    ?.Value.ToString() ?? string.Empty;
                 if (!string.IsNullOrWhiteSpace(filterSector))
                     source = source.Where(x => x.Sector == filterSector);
 
@@ -111,14 +111,31 @@ namespace APS.Methods.Profit
                               {
                                   Sector = filterSector,
                                   ItemSoldId = filterWare,
-                                  LastActivity = filterLastActivty,
+                                  LastActivity = filterLastActivity,
                                   OurShipId = g.Key,
                                   Quantity = g.Sum(s => s.worstShip.Quantity),
                                   EstimatedProfit = g.Sum(s =>
-                                      (((s.worstShip.Money / 100) / s.worstShip.Quantity) - s.worstShipWares.MarketAveragePrice) *
-                                      s.worstShip.Quantity)
+                                      s.worstShip.Money / 100 - (s.worstShipWares.TransportType=="container" ? s.worstShipWares.MarketAveragePrice * s.worstShip.Quantity : 0))
                               }).ToDataSourceResult(request);
             }
+        }
+        private static IEnumerable<IFilterDescriptor> GetFilters(IEnumerable<IFilterDescriptor> filters)
+        {
+            var result = new List<IFilterDescriptor>();
+            if (filters.Any())
+            {
+                foreach (var filter in filters)
+                {
+                    if (filter is FilterDescriptor)
+                        result.Add((FilterDescriptor)filter);
+                    else if (filter is CompositeFilterDescriptor)
+                    {
+                        result.AddRange(GetFilters(((CompositeFilterDescriptor)filter).FilterDescriptors));
+                    }
+                }
+            }
+
+            return result;
         }
     }
 }

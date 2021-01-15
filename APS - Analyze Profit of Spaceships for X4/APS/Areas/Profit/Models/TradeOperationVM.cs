@@ -24,17 +24,13 @@ namespace APS.Areas.Profit.Models
         public string Sector { get; set; }
         public string Faction { get; set; }
         public int Money { get; set; }
-        public decimal PricePerItem => Money == 0 ? 0 : (Quantity == 0 ? 0 : (Money / 100) / Quantity);
 
-        public decimal MarketAveragePrice { get; set; }
+        public decimal WareMarketAveragePrice { get; set; }
+        public bool WareTransportTypeContainer { get; set; }
 
         public decimal EstimatedProfit =>
-            //wut is this? //I am disconsidering Ware price when it's a primary product (stored on Solid or Liquid storage)
-            //if ("Container".Equals(ItemSold.TransportType))
-            //{
-            //todo!! if (SoldToName == "Container")
-            //todo!!    estimatedSoldPrice = ItemSold.MarketMinimumPrice;
-            //}
-            (PricePerItem - MarketAveragePrice) * Quantity;
+            CorrectedMoney - (WareTransportTypeContainer ? WareMarketAveragePrice * Quantity : 0);
+        public int CorrectedMoney =>
+            Money / 100 ;
     }
 }

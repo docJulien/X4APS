@@ -27,7 +27,8 @@ namespace APS.Methods.Profit
                         Faction = t.Faction,
                         OurShipId = t.OurShipId,
                         SoldToName = t.SoldToName,
-                        MarketAveragePrice = trade.MarketAveragePrice,
+                        WareMarketAveragePrice = trade.MarketAveragePrice,
+                        WareTransportTypeContainer = trade.TransportType == "Container",
                         Sector = t.Sector,
                         SoldToId = t.SoldToId,
                         OurShipName = t.OurShipName
