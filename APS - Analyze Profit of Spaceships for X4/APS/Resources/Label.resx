@@ -322,10 +322,10 @@
     <value>ConfirmerResultats</value>
   </data>
   <data name="Connecter" xml:space="preserve">
-    <value>Connecter</value>
+    <value>Connect</value>
   </data>
   <data name="Connexion" xml:space="preserve">
-    <value>Connexion</value>
+    <value>Connection</value>
   </data>
   <data name="Contact" xml:space="preserve">
     <value>Contact</value>
@@ -487,34 +487,34 @@
     <value>Month</value>
   </data>
   <data name="MotPasse" xml:space="preserve">
-    <value>MotPasse</value>
+    <value>Password</value>
   </data>
   <data name="MotPasseActuel" xml:space="preserve">
-    <value>MotPasseActuel</value>
+    <value>Current Password</value>
   </data>
   <data name="MotPasseConfirmer" xml:space="preserve">
-    <value>MotPasseConfirmer</value>
+    <value>Confirm Password</value>
   </data>
   <data name="MotPasseConfirmerNouveau" xml:space="preserve">
-    <value>MotPasseConfirmerNouveau</value>
+    <value>Confirm New Password</value>
   </data>
   <data name="MotPasseNouveau" xml:space="preserve">
-    <value>MotPasseNouveau</value>
+    <value>New Password</value>
   </data>
   <data name="Nom" xml:space="preserve">
-    <value>Nom</value>
+    <value>Name</value>
   </data>
   <data name="NomUsager" xml:space="preserve">
-    <value>NomUsager</value>
+    <value>User Name</value>
   </data>
   <data name="Non" xml:space="preserve">
-    <value>Non</value>
+    <value>No</value>
   </data>
   <data name="Notes" xml:space="preserve">
     <value>Notes</value>
   </data>
   <data name="NouvelUtilisateur" xml:space="preserve">
-    <value>NouvelUtilisateur</value>
+    <value>New User</value>
   </data>
   <data name="Ok" xml:space="preserve">
     <value>Ok</value>
@@ -526,10 +526,10 @@
     <value>Options</value>
   </data>
   <data name="OublieMotPasse" xml:space="preserve">
-    <value>OublieMotPasse</value>
+    <value>Forgot Password ?</value>
   </data>
   <data name="Oui" xml:space="preserve">
-    <value>Oui</value>
+    <value>Yes</value>
   </data>
   <data name="PDFExport" xml:space="preserve">
     <value>PDFExport</value>
@@ -541,7 +541,7 @@
     <value>Preference</value>
   </data>
   <data name="Prefixe" xml:space="preserve">
-    <value>Prefixe</value>
+    <value>Prefix</value>
   </data>
   <data name="Preleve" xml:space="preserve">
     <value>Preleve</value>

@@ -33,6 +33,7 @@ namespace APS
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
+                .UseUrls("https://0.0.0.0:5001")
                 .ConfigureLogging(logging =>
                 {
                     logging.ClearProviders();

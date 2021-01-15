@@ -673,7 +673,7 @@ namespace APS.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Connecter.
+        ///   Looks up a localized string similar to Connect.
         /// </summary>
         public static string Connecter {
             get {
@@ -682,7 +682,7 @@ namespace APS.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Connexion.
+        ///   Looks up a localized string similar to Connection.
         /// </summary>
         public static string Connexion {
             get {
@@ -1168,7 +1168,7 @@ namespace APS.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MotPasse.
+        ///   Looks up a localized string similar to Password.
         /// </summary>
         public static string MotPasse {
             get {
@@ -1177,7 +1177,7 @@ namespace APS.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MotPasseActuel.
+        ///   Looks up a localized string similar to Current Password.
         /// </summary>
         public static string MotPasseActuel {
             get {
@@ -1186,7 +1186,7 @@ namespace APS.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MotPasseConfirmer.
+        ///   Looks up a localized string similar to Confirm Password.
         /// </summary>
         public static string MotPasseConfirmer {
             get {
@@ -1195,7 +1195,7 @@ namespace APS.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MotPasseConfirmerNouveau.
+        ///   Looks up a localized string similar to Confirm New Password.
         /// </summary>
         public static string MotPasseConfirmerNouveau {
             get {
@@ -1204,7 +1204,7 @@ namespace APS.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MotPasseNouveau.
+        ///   Looks up a localized string similar to New Password.
         /// </summary>
         public static string MotPasseNouveau {
             get {
@@ -1213,7 +1213,7 @@ namespace APS.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Nom.
+        ///   Looks up a localized string similar to Name.
         /// </summary>
         public static string Nom {
             get {
@@ -1222,7 +1222,7 @@ namespace APS.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NomUsager.
+        ///   Looks up a localized string similar to User Name.
         /// </summary>
         public static string NomUsager {
             get {
@@ -1231,7 +1231,7 @@ namespace APS.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Non.
+        ///   Looks up a localized string similar to No.
         /// </summary>
         public static string Non {
             get {
@@ -1249,7 +1249,7 @@ namespace APS.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NouvelUtilisateur.
+        ///   Looks up a localized string similar to New User.
         /// </summary>
         public static string NouvelUtilisateur {
             get {
@@ -1285,7 +1285,7 @@ namespace APS.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to OublieMotPasse.
+        ///   Looks up a localized string similar to Forgot Password ?.
         /// </summary>
         public static string OublieMotPasse {
             get {
@@ -1294,7 +1294,7 @@ namespace APS.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Oui.
+        ///   Looks up a localized string similar to Yes.
         /// </summary>
         public static string Oui {
             get {
@@ -1330,7 +1330,7 @@ namespace APS.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Prefixe.
+        ///   Looks up a localized string similar to Prefix.
         /// </summary>
         public static string Prefixe {
             get {
