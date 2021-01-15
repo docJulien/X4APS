@@ -23,6 +23,8 @@ namespace APS.Methods.Profit
                             ItemSoldId = t.ItemSoldId,
                             Quantity = t.Quantity,
                             Money = t.Money,
+                            OurShipId = t.OurShipId,
+                            OurShipName = t.OurShipName,
                             WareMarketAveragePrice = trade.MarketAveragePrice,
                             WareTransportTypeContainer = trade.TransportType == "Container"
                         }).ToList() //todo use iqueryable until the end for perf
