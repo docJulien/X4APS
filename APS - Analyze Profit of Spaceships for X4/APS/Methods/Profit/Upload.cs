@@ -2,7 +2,9 @@
 using System.Linq;
 using System.Security.Principal;
 using APS.Areas.Profit.Models;
+using APS.Migrations;
 using APS.Model;
+using BusinessLogic.Models;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using Microsoft.Extensions.Logging;
@@ -56,6 +58,16 @@ namespace APS.Methods.Profit
 
                 var duplicates = result.GroupBy(x => x.Time)
                     .Where(x => x.Count(x => true) > 1).Select(x => x.Key);
+
+                var ships = db.Ships.ToList();
+                var addedShips = result.Select(x => new Ship
+                    {
+                        Actif = true,
+                        ShipID = x.OurShipId,
+                        ShipName = x.OurShipName
+                    }
+                ).Distinct().ToList().Except(ships);
+                db.Ships.AddRange(addedShips);
 
                 int step = 0;
                 result.Where(x=> duplicates.Contains(x.Time)).Each(

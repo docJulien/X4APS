@@ -148,7 +148,11 @@
                     columns.Bound(c => c.ItemSoldId).Title("Ware");
                     columns.Bound(c => c.OurShipId).Title("Ship ID");
                     columns.Bound(c => c.Quantity);
-                    columns.Bound(c => c.EstimatedProfit).Format("{0:c0}").Width(181).HtmlAttributes(new { style = "text-align:right"});
+                    columns.Bound(c => c.EstimatedProfit).Format("{0:c0}").Width(181).HtmlAttributes(new { style = "text-align:right"});            
+                    columns.Bound(c => c.Actif).Title(Label.Show).Width(200).ClientTemplate("<div class='# if (Actif) { # enabled # } else { # disabled # } #'> <a role='button' OnClick='enableGridRow(this);' class='k-button k-button-icontext k-grid-Enabled fa fa-check' title='Show' href='\\#'><span></span> </a>" +
+                                                                                                                                                                                                                             "<a role='button' OnClick='disableGridRow(this);' class='k-button k-button-icontext k-grid-Disabled fa fa-ban' title='Hide' href='\\#'><span></span> </a></div>")
+                        .Filterable(f => f.Messages(x => x.IsTrue(Label.Oui).IsFalse(Label.Non)));
+
                 })
                 .StandardGridConfiguration()
                 .ToolBar(t =>
@@ -163,8 +167,15 @@
                         events.Error("errorHandler");
                         events.RequestEnd("saveHandler");
                     })
+                    .Model(model =>
+                    {
+                        model.Id(p => p.OurShipId);
+                        model.Field(p => p.Actif).DefaultValue(true);
+                    })
                     .Read(read => read.Action("ReadShipPerformance", "Chart", new {Area = "Profit"}))
+                    .Update(update => update.Action("UpdateShipPerformance", "Chart", new { Area = "Profit" }))
                     .PageSize(100)
+                    .Filter(f => f.Add(x => x.Actif).IsEqualTo(true))
                     .Sort(s => s.Add(x => x.EstimatedProfit).Ascending())
                 ))
         </div>

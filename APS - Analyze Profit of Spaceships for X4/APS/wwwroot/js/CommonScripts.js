@@ -35,7 +35,7 @@ function saveHandler(s) {
     // Pour les succès de mise à jour
     if (s.type === "update") {
         new PNotify({
-            text: "Modification effectuée", // TODO utiliser les ressources files en JS
+            text: "Update success", // TODO utiliser les ressources files en JS
             type: "success",
             hide: true,         // Retirer la notification après un délai...
             delay: 8000,        // ... de 8 secondes
@@ -47,7 +47,7 @@ function saveHandler(s) {
     // Pour les succès de création
     if (s.type === "create") {
         new PNotify({
-            text: "Création effectuée", // TODO utiliser les ressources files en JS
+            text: "Creation success", // TODO utiliser les ressources files en JS
             type: "success",
             hide: true,         // Retirer la notification après un délai...
             delay: 8000,        // ... de 8 secondes
@@ -64,15 +64,15 @@ function dataBound_Handler() {
 function errorHandler(e) {
     console.log(e);
     var gridName = "Grid";
-    var errortitle = "Oups... :/";
-    var errormessage = "Le serveur a retourné une erreur anormale. ";
+    var errortitle = "Oops... :/";
+    var errormessage = "Abormal error from the server. ";
     if (e.xhr) {
         if (e.xhr.statusText) {
             errormessage = errormessage + " " + e.xhr.statusText;
         }
         if (e.xhr.status === 401) {
-            errortitle = "Session Expirée...";
-            errormessage = "Votre session a expiré. Vous serez redirigés dans 2 secondes...";
+            errortitle = "Session expired...";
+            errormessage = "Your session has timed out. You will be redirected to the login page...";
             setTimeout(function () {
                 //redirect to login
                 window.location.href = window.location.origin + "/Account/Login?ReturnUrl=" + window.location.pathname;
@@ -82,7 +82,7 @@ function errorHandler(e) {
     }
     var errortype = "error";
     if (e.errors) {
-        errortitle = "Erreur de validation",   
+        errortitle = "Validation Error",   
         errormessage = e.errors;
         errortype = "warning";
     }
@@ -111,13 +111,13 @@ function deleteRow_handler(element) {
     
     var model = grid.dataSource.getByUid($(target).closest("tr").data("uid"));
     
-    modalConfirmDialog("Désirez-vous effacer cette entrée?", "Effacer",
+    modalConfirmDialog("Do you want to erase this entry?", "Erase",
         function () {
             grid.removeRow($(target).closest("tr"));
             
             new PNotify({
-                title: "Succès",
-                text: "L'entrée a été effacée.",
+                title: "Success",
+                text: "The entry was erased.",
                 type: "success",
                 icon: false,
                 hide: true,          // Retirer la notification après un délai...
@@ -151,7 +151,7 @@ function notification(title, text, type) {
 // rappel: pour obtenir une fonction anonyme, on place: function(){ ... } comme dans l'exemple:  function () { grid.removeRow($(target).closest("tr")) })
 function modalConfirmDialog(message, CommandText, functionToExecuteOnYes) {
     new PNotify({
-        title: 'Veuillez Confirmer',
+        title: 'Please confirm',
         text: message,
         icon: 'fa fa-hand-paper-o',
         hide: false,
@@ -165,7 +165,7 @@ function modalConfirmDialog(message, CommandText, functionToExecuteOnYes) {
                 }
             },
             {
-                text: "Annuler", addClass: "btn-primary", click: function (notice) {
+                text: "Cancel", addClass: "btn-primary", click: function (notice) {
                     notice.remove(); notice.get().trigger("pnotify.cancel", notice);
                     notification('Action annulée', '', 'info');
                 }
@@ -284,10 +284,10 @@ function onChangeOrder(e) {
         type: "POST",
         //dataType: 'json',
         success: function (result) {
-            notification("Ordre","L'ordre a changé","info")
+            notification("Order","The order was changed","info")
         },
         error: function (xhr, ajaxOptions, thrownError) {
-            notification("Ordre", xhr.status + " " + thrownError, "error");
+            notification("Order", xhr.status + " " + thrownError, "error");
         }
     });
 };

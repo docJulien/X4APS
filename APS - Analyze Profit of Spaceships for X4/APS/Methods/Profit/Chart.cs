@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using APS.Areas.Profit.Models;
 using APS.Model;
+using BusinessLogic.Models;
 using Kendo.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
+using DBContext = APS.Model.DBContext;
 
 namespace APS.Methods.Profit
 {
@@ -46,35 +49,44 @@ namespace APS.Methods.Profit
 
         internal static IEnumerable<ChartWareVM> GetTradeOperation(string userName)
         {
-            using (var db = new DBContext())
-            {
-                var result = (from t in db.TradeOperations
-                        join w in db.Wares on t.ItemSoldId equals w.WareID into joinedWares
-                        from trade in joinedWares.DefaultIfEmpty()
-                        select new TradeOperationVM()
-                        {
-                            Time = t.Time,
-                            ItemSoldId = t.ItemSoldId,
-                            Quantity = t.Quantity,
-                            Money = t.Money,
-                            WareMarketAveragePrice = trade.MarketAveragePrice,
-                            WareTransportTypeContainer = trade.TransportType == "Container"
-                        }).ToList() //todo use iqueryable until the end for perf
-                       .GroupBy(x =>
-                           x.TimeRounded
-                       )
-                       .Select(x => new ChartWareVM
-                       {
-                           TimeRounded = x.Key.ToString("D3"),
-                           //Ware = x.Key.Ware,
-                           EstimatedProfit = x.Sum(s => s.EstimatedProfit),
-                           Quantity = x.Sum(s => s.Quantity),
-                           Money = x.Sum(s => s.CorrectedMoney)
-                       });
+            using var db = new DBContext();
+            var result = (from t in db.TradeOperations
+                    join w in db.Wares on t.ItemSoldId equals w.WareID into joinedWares
+                    from trade in joinedWares.DefaultIfEmpty()
+                    select new TradeOperationVM()
+                    {
+                        Time = t.Time,
+                        ItemSoldId = t.ItemSoldId,
+                        Quantity = t.Quantity,
+                        Money = t.Money,
+                        WareMarketAveragePrice = trade.MarketAveragePrice,
+                        WareTransportTypeContainer = trade.TransportType == "Container"
+                    }).ToList() //todo use iqueryable until the end for perf
+                .GroupBy(x =>
+                    x.TimeRounded
+                )
+                .Select(x => new ChartWareVM
+                {
+                    TimeRounded = x.Key.ToString("D3"),
+                    //Ware = x.Key.Ware,
+                    EstimatedProfit = x.Sum(s => s.EstimatedProfit),
+                    Quantity = x.Sum(s => s.Quantity),
+                    Money = x.Sum(s => s.CorrectedMoney)
+                });
 
-                return result.ToList();
-            }
+            return result.ToList();
         }
+
+        internal static void UpdateShip(ShipSummaryVM model)
+        {
+            using var db = new DBContext();
+            Ship s;
+            s = db.Ships.Single(u => u.ShipID == model.OurShipId);
+
+            s.Actif = model.Actif;
+            db.SaveChanges();
+        }
+
         internal static DataSourceResult GetWorstShips([DataSourceRequest] DataSourceRequest request)
         {
             using (var db = new DBContext())
@@ -91,7 +103,7 @@ namespace APS.Methods.Profit
                 var wares = db.Wares.Select(x => x);
                 var source = db.TradeOperations.Where(x =>
                     x.Time >= lastActivity - filterLastActivity * 60*60 && x.Money != 0 && x.Quantity != 0);
-                var shipList = db.TradeOperations.Select(x => x.OurShipId).Distinct();
+                var shipList = db.Ships;
 
                 var filterWare = filters
                         .FirstOrDefault(x => ( x).Member == "ItemSoldId")?.Value.ToString() ?? string.Empty;
@@ -104,11 +116,11 @@ namespace APS.Methods.Profit
 
                 return (from allShips in shipList
                         join worstShips in source
-                            on allShips equals worstShips.OurShipId into joinedShips
+                            on allShips.ShipID equals worstShips.OurShipId into joinedShips
                         from worstShip in joinedShips.DefaultIfEmpty()
                         join w in wares on worstShip.ItemSoldId equals w.WareID into joinedWares
                         from worstShipWares in joinedWares.DefaultIfEmpty()
-                        group new {worstShip, worstShipWares} by allShips into g
+                        group new {worstShip, worstShipWares, allShips} by allShips.ShipID into g
                               select new ShipSummaryVM
                               {
                                   Sector = filterSector,
@@ -117,7 +129,8 @@ namespace APS.Methods.Profit
                                   OurShipId = g.Key,
                                   Quantity = g.Sum(s => s.worstShip.Quantity),
                                   EstimatedProfit = g.Sum(s =>
-                                      s.worstShip.Money / 100 - (s.worstShipWares.TransportType=="container" ? s.worstShipWares.MarketAveragePrice * s.worstShip.Quantity : 0))
+                                      s.worstShip.Money / 100 - (s.worstShipWares.TransportType=="container" ? s.worstShipWares.MarketAveragePrice * s.worstShip.Quantity : 0)),
+                                  Actif = g.Max(s => s.allShips.Actif)
                               }).ToDataSourceResult(request);
             }
         }

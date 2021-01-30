@@ -17,5 +17,6 @@
         public string OurShipId { get; set; }
         public decimal EstimatedProfit { get; set; }
         public int Quantity { get; internal set; }
+        public bool Actif { get; set; }
     }
 }
